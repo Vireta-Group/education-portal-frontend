@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { Plus } from 'lucide-react';
-import { Button } from '../components/ui/Button';
-import { PageHeader } from '../components/common/PageHeader';
-import { DataTable } from '../components/common/DataTable';
-import { StatusBadge } from '../components/ui/StatusBadge';
+import { Button } from '../../components/ui/Button';
+import { PageHeader } from '../../components/common/PageHeader';
+import { DataTable } from '../../components/common/DataTable';
+import { StatusBadge } from '../../components/ui/StatusBadge';
 import { toast } from 'sonner';
 
 // Mock data
