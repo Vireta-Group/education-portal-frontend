@@ -5,7 +5,15 @@ const Teachers = () => {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Directory / Staff</h1>
+          <div className="flex items-center gap-4 mb-6">
+        <Link 
+          to=".."
+          className="p-2 -ml-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors text-slate-500 dark:text-slate-400"
+        >
+          <ArrowLeft size={20} />
+        </Link>
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Directory / Staff</h1>
+      </div>
           <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Manage teaching and organizational staff.</p>
         </div>
         <button className="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg font-medium text-sm shadow-[0_2px_10px_-2px_rgba(37,99,235,0.5)] transition-all flex items-center gap-2">
