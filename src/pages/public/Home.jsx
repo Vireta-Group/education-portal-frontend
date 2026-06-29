@@ -26,10 +26,10 @@ const Home = () => {
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4">
-            <Link to="#admissions" className="px-8 py-4 bg-indigo-600 text-white rounded-full font-semibold text-lg hover:bg-indigo-700 shadow-lg hover:shadow-indigo-500/30 transition-all flex items-center justify-center gap-2">
+            <Link to="/public/admission" className="px-8 py-4 bg-indigo-600 text-white rounded-full font-semibold text-lg hover:bg-indigo-700 shadow-lg hover:shadow-indigo-500/30 transition-all flex items-center justify-center gap-2">
               Apply Now <ArrowRight size={20} />
             </Link>
-            <Link to="#about" className="px-8 py-4 bg-white text-slate-700 rounded-full font-semibold text-lg border border-slate-200 hover:border-slate-300 hover:bg-slate-50 transition-all flex items-center justify-center">
+            <Link to="/public/about" className="px-8 py-4 bg-white text-slate-700 rounded-full font-semibold text-lg border border-slate-200 hover:border-slate-300 hover:bg-slate-50 transition-all flex items-center justify-center">
               Learn More
             </Link>
           </div>
@@ -102,7 +102,7 @@ const Home = () => {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
           <h2 className="text-3xl font-extrabold text-white sm:text-4xl mb-6">Ready to shape your child's future?</h2>
           <p className="text-xl text-indigo-200 mb-10">Join the EduPro community today and embark on a journey of academic excellence.</p>
-          <Link to="#admissions" className="inline-flex items-center gap-2 px-8 py-4 bg-white text-indigo-900 rounded-full font-semibold text-lg hover:bg-indigo-50 shadow-lg transition-all">
+          <Link to="/public/admission" className="inline-flex items-center gap-2 px-8 py-4 bg-white text-indigo-900 rounded-full font-semibold text-lg hover:bg-indigo-50 shadow-lg transition-all">
             Start Admission Process
           </Link>
         </div>

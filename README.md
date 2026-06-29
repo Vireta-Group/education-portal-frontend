@@ -1,16 +1,58 @@
-# React + Vite
+# EduPro School Management System
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern, comprehensive school management platform built with **React 19**, **Vite 8**, **Tailwind CSS 4**, and **Redux Toolkit**.
 
-Currently, two official plugins are available:
+## Tech Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **React 19** — Latest React with concurrent features
+- **Vite 8** — Next-gen build tool with instant HMR
+- **Tailwind CSS 4** — Utility-first CSS framework
+- **React Router 7** — Declarative routing
+- **Redux Toolkit** — State management
+- **TanStack React Query 5** — Server state management (ready for API integration)
+- **React Hook Form + Zod** — Form handling & validation
+- **class-variance-authority** — Component variants
+- **sonner** — Toast notifications
+- **lucide-react** — Icon library
 
-## React Compiler
+## Getting Started
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```bash
+npm install
+npm run dev
+```
 
-## Expanding the ESLint configuration
+## Available Scripts
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start development server |
+| `npm run build` | Build for production |
+| `npm run preview` | Preview production build |
+| `npm run lint` | Run ESLint |
+
+## Project Structure
+
+```
+src/
+├── components/
+│   ├── ui/              # UI primitives (Button, Input, DatePicker, Skeleton, StatusBadge)
+│   └── common/          # Shared components (DataTable, FormField, PageHeader)
+├── pages/
+│   ├── public/          # Landing, Login, Register + portfolio pages
+│   └── private/         # 16 module directories (Academics, Students, Teachers, etc.)
+├── store/               # Redux store + slices
+├── layout/              # MainLayout, PublicLayout, Sidebar
+├── hooks/               # Custom hooks
+├── lib/                 # Utilities (cn)
+└── routes/              # Route definitions
+```
+
+## Demo Credentials
+
+- **Email:** admin@example.com
+- **Password:** 12345
+
+## Modules
+
+Academics | Students | Teachers | Employees | Exams | Results | Fees | Transport | Hostel | Canteen | Library | HR | Communication | Events | Security | Health

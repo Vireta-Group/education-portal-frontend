@@ -1,8 +1,10 @@
 import { Bell, Search, User, Moon, Sun, Menu } from 'lucide-react';
-import { useDarkMode } from '../hooks/useDarkMode';
+import { useSelector, useDispatch } from 'react-redux';
+import { toggleTheme } from '../store/slices/appSlice';
 
 const Header = ({ toggleSidebar }) => {
-  const { theme, toggleTheme } = useDarkMode();
+  const theme = useSelector((state) => state.app.theme);
+  const dispatch = useDispatch();
 
   return (
     <header className="h-16 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-4 lg:px-6 sticky top-0 z-10 transition-colors duration-300">
@@ -33,7 +35,7 @@ const Header = ({ toggleSidebar }) => {
 
       <div className="flex items-center gap-4">
         <button 
-          onClick={toggleTheme}
+          onClick={() => dispatch(toggleTheme())}
           className="p-2 text-slate-400 hover:text-primary-600 bg-slate-50 dark:bg-slate-800 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-full transition-all duration-200"
           title={`Switch to ${theme === 'light' ? 'Dark' : 'Light'} Mode`}
         >
