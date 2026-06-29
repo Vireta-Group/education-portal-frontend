@@ -1,132 +1,216 @@
-import { useState } from 'react';
-import { Outlet, Link } from 'react-router-dom';
-import { BookOpen, LogIn, Menu, X } from 'lucide-react';
+import { useState, useEffect } from "react";
+import { NavLink, Outlet, useLocation } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { Menu, X, ChevronDown, GraduationCap, Phone, Mail, MapPin, ArrowUpRight } from "lucide-react";
 
-const PublicLayout = () => {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+const navLinks = [
+  { to: "/public", label: "Home" },
+  { to: "/public/about", label: "About" },
+  { to: "/public/academic-life", label: "Academic" },
+  { to: "/public/admission", label: "Admission" },
+  { to: "/public/co-curricular", label: "Co-Curricular" },
+  { to: "/public/newsroom", label: "Newsroom" },
+  { to: "/public/contact", label: "Contact" },
+];
 
-  const navLinks = [
-    { label: 'About Us', to: '/public/about' },
-    { label: 'Academics', to: '/public/academic-life' },
-    { label: 'Co-Curricular', to: '/public/co-curricular' },
-    { label: 'Admissions', to: '/public/admission' },
-  ];
+const footerLinks = [
+  { title: "Quick Links", links: [
+    { label: "About Us", to: "/public/about" },
+    { label: "Admissions", to: "/public/admission" },
+    { label: "Academics", to: "/public/academic-life" },
+    { label: "Co-Curricular", to: "/public/co-curricular" },
+    { label: "News & Events", to: "/public/newsroom" },
+    { label: "Contact Us", to: "/public/contact" },
+  ]},
+  { title: "Student Life", links: [
+    { label: "Clubs & Societies", to: "/public/co-curricular" },
+    { label: "Sports & Games", to: "/public/co-curricular" },
+    { label: "Cultural Events", to: "/public/co-curricular" },
+    { label: "Student Council", to: "/public/academic-life" },
+    { label: "Code of Conduct", to: "/public/academic-life" },
+  ]},
+  { title: "Resources", links: [
+    { label: "Academic Calendar", to: "/public/academic-life" },
+    { label: "Admission Circulars", to: "/public/admission" },
+    { label: "Photo Gallery", to: "/public/newsroom" },
+    { label: "Video Gallery", to: "/public/newsroom" },
+    { label: "Downloads", to: "/public/admission" },
+    { label: "FAQ", to: "/public/admission" },
+  ]},
+];
+
+export default function PublicLayout() {
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const location = useLocation();
+  const { darkMode } = useSelector((state) => state.app);
+
+  useEffect(() => {
+    setMobileOpen(false);
+    window.scrollTo(0, 0);
+  }, [location]);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col font-sans text-slate-900 selection:bg-indigo-100 selection:text-indigo-900">
-      {/* Navigation */}
-      <nav className="sticky top-0 z-50 w-full bg-white/80 backdrop-blur-md border-b border-slate-200 shadow-sm">
+    <div className={`min-h-screen flex flex-col ${darkMode ? "dark" : ""}`}>
+      <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        scrolled
+          ? "bg-white/80 dark:bg-secondary-900/80 backdrop-blur-xl shadow-lg shadow-black/5"
+          : "bg-transparent"
+      }`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-20">
-            {/* Logo */}
-            <Link to="/public" className="flex items-center gap-2">
-              <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center shadow-md">
-                 <BookOpen className="text-white w-6 h-6" />
+          <div className="flex items-center justify-between h-16 lg:h-20">
+            <NavLink to="/public" className="flex items-center gap-2.5 group">
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center shadow-lg shadow-primary-500/25 group-hover:shadow-primary-500/40 transition-shadow">
+                <GraduationCap className="w-5 h-5 text-white" />
               </div>
-              <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-700">EduPro</span>
-            </Link>
+              <span className="text-lg font-bold text-secondary-800 dark:text-white tracking-tight">
+                Sunshine <span className="text-primary-600">School</span>
+              </span>
+            </NavLink>
 
-            {/* Desktop Menu */}
-            <div className="hidden md:flex items-center gap-8">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.to}
-                  to={link.to}
-                  className="text-sm font-medium text-slate-600 hover:text-indigo-600 transition-colors"
-                >
-                  {link.label}
-                </Link>
-              ))}
-            </div>
+            <nav className="hidden lg:flex items-center gap-1">
+              {navLinks.map((link) => {
+                const isActive = location.pathname === link.to || (link.to !== "/public" && location.pathname.startsWith(link.to));
+                return (
+                  <NavLink
+                    key={link.to}
+                    to={link.to}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 relative group ${
+                      isActive
+                        ? "text-primary-600 dark:text-primary-400"
+                        : "text-secondary-800/70 dark:text-white/70 hover:text-secondary-800 dark:hover:text-white"
+                    }`}
+                  >
+                    {link.label}
+                    {isActive && (
+                      <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-6 h-0.5 bg-primary-500 rounded-full" />
+                    )}
+                  </NavLink>
+                );
+              })}
+            </nav>
 
-            {/* CTA Buttons */}
-            <div className="hidden md:flex items-center gap-4">
-              <Link to="/login" className="flex items-center gap-2 text-sm font-semibold text-slate-700 hover:text-indigo-600 transition-colors px-2 py-1">
-                <LogIn size={18} /> Staff / Student Portal
-              </Link>
-            </div>
-
-            {/* Mobile Menu Button */}
-            <div className="md:hidden flex items-center">
-              <button
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="text-slate-600 hover:text-slate-900 p-2"
+            <div className="flex items-center gap-3">
+              <NavLink
+                to="/login"
+                className="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-primary-600 dark:text-primary-400 border border-primary-200 dark:border-primary-800 rounded-xl hover:bg-primary-50 dark:hover:bg-primary-900/30 transition-colors"
               >
-                {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+                Sign In
+              </NavLink>
+              <NavLink
+                to="/register"
+                className="hidden sm:inline-flex items-center gap-1.5 px-5 py-2 text-sm font-medium text-white bg-gradient-to-r from-primary-600 to-primary-700 rounded-xl hover:from-primary-700 hover:to-primary-800 shadow-lg shadow-primary-500/25 hover:shadow-primary-500/40 transition-all"
+              >
+                Register
+                <ArrowUpRight className="w-3.5 h-3.5" />
+              </NavLink>
+              <button
+                onClick={() => setMobileOpen(!mobileOpen)}
+                className="lg:hidden p-2 rounded-xl text-secondary-800 dark:text-white hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+              >
+                {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
               </button>
             </div>
           </div>
         </div>
 
-        {/* Mobile Menu Dropdown */}
-        {mobileMenuOpen && (
-          <div className="md:hidden border-t border-slate-200 bg-white">
-            <div className="px-4 py-4 space-y-3">
-              {navLinks.map((link) => (
-                <Link
+        <div className={`lg:hidden transition-all duration-300 overflow-hidden ${
+          mobileOpen ? "max-h-[32rem] opacity-100" : "max-h-0 opacity-0"
+        }`}>
+          <nav className="px-4 pb-4 pt-2 bg-white/95 dark:bg-secondary-900/95 backdrop-blur-xl border-t border-gray-100 dark:border-gray-800">
+            {navLinks.map((link) => {
+              const isActive = location.pathname === link.to || (link.to !== "/public" && location.pathname.startsWith(link.to));
+              return (
+                <NavLink
                   key={link.to}
                   to={link.to}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="block text-sm font-medium text-slate-600 hover:text-indigo-600 transition-colors py-2"
+                  className={`block px-4 py-3 rounded-xl text-sm font-medium transition-all ${
+                    isActive
+                      ? "text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20"
+                      : "text-secondary-800/70 dark:text-white/70 hover:bg-gray-50 dark:hover:bg-gray-800/50"
+                  }`}
                 >
                   {link.label}
-                </Link>
-              ))}
-              <Link
-                to="/login"
-                onClick={() => setMobileMenuOpen(false)}
-                className="block text-sm font-semibold text-indigo-600 hover:text-indigo-700 transition-colors py-2 border-t border-slate-100 pt-4 mt-2"
-              >
-                <LogIn size={16} className="inline mr-2" />Staff / Student Portal
-              </Link>
+                </NavLink>
+              );
+            })}
+            <div className="mt-3 pt-3 border-t border-gray-100 dark:border-gray-800 flex gap-2">
+              <NavLink to="/login" className="flex-1 text-center px-4 py-2.5 text-sm font-medium text-primary-600 dark:text-primary-400 border border-primary-200 dark:border-primary-800 rounded-xl hover:bg-primary-50 dark:hover:bg-primary-900/30 transition-colors">
+                Sign In
+              </NavLink>
+              <NavLink to="/register" className="flex-1 text-center px-4 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-primary-600 to-primary-700 rounded-xl hover:from-primary-700 hover:to-primary-800 transition-all">
+                Register
+              </NavLink>
             </div>
-          </div>
-        )}
-      </nav>
+          </nav>
+        </div>
+      </header>
 
-      {/* Main Content Area */}
-      <main className="flex-1 flex flex-col">
+      <main className="flex-1">
         <Outlet />
       </main>
 
-      {/* Footer */}
-      <footer className="bg-slate-950 text-slate-400 py-12 border-t border-slate-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-             <div className="col-span-1 md:col-span-2">
-               <div className="flex items-center gap-2 mb-4">
-                  <div className="w-8 h-8 bg-indigo-500 rounded-lg flex items-center justify-center">
-                     <BookOpen className="text-white w-5 h-5" />
-                  </div>
-                  <span className="text-xl font-bold text-slate-100">EduPro</span>
-               </div>
-               <p className="text-sm max-w-sm">Empowering the next generation of global leaders through innovative education, character building, and academic excellence.</p>
-             </div>
-             <div>
-               <h3 className="text-slate-100 font-semibold mb-4">Quick Links</h3>
-                <ul className="space-y-2 text-sm">
-                  <li><Link to="/public/about" className="hover:text-indigo-400 transition-colors">About Us</Link></li>
-                  <li><Link to="/public/academic-life" className="hover:text-indigo-400 transition-colors">Academics</Link></li>
-                  <li><Link to="/public/admission" className="hover:text-indigo-400 transition-colors">Admissions</Link></li>
+      <footer className="bg-secondary-900 dark:bg-black text-white relative overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(59,130,246,0.08),transparent_50%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(99,102,241,0.06),transparent_50%)]" />
+
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-8">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-12 lg:gap-8 mb-16">
+            <div className="lg:col-span-1">
+              <div className="flex items-center gap-2.5 mb-5">
+                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center shadow-lg shadow-primary-500/25">
+                  <GraduationCap className="w-5 h-5 text-white" />
+                </div>
+                <span className="text-lg font-bold tracking-tight">
+                  Sunshine <span className="text-primary-400">School</span>
+                </span>
+              </div>
+              <p className="text-gray-400 text-sm leading-relaxed mb-6">
+                Empowering students with knowledge, skills, and values to excel in a rapidly changing world. Nurturing tomorrow's leaders today.
+              </p>
+              <div className="flex gap-3">
+                {["facebook", "twitter", "instagram", "youtube"].map((social) => (
+                  <a key={social} href="#" className="w-9 h-9 rounded-lg bg-white/10 hover:bg-primary-600/20 flex items-center justify-center text-gray-400 hover:text-primary-400 transition-all">
+                    <span className="text-xs font-bold uppercase">{social[0]}</span>
+                  </a>
+                ))}
+              </div>
+            </div>
+
+            {footerLinks.map((group) => (
+              <div key={group.title}>
+                <h3 className="text-sm font-semibold text-white/90 uppercase tracking-wider mb-4">{group.title}</h3>
+                <ul className="space-y-3">
+                  {group.links.map((link) => (
+                    <li key={link.label}>
+                      <NavLink to={link.to} className="text-sm text-gray-400 hover:text-primary-400 transition-colors flex items-center gap-1.5 group">
+                        <span className="w-1 h-1 rounded-full bg-gray-500 group-hover:bg-primary-400 transition-colors" />
+                        {link.label}
+                      </NavLink>
+                    </li>
+                  ))}
                 </ul>
-             </div>
-             <div>
-               <h3 className="text-slate-100 font-semibold mb-4">Contact</h3>
-               <ul className="space-y-2 text-sm">
-                 <li>123 Education Lane</li>
-                 <li>Cityville, State 12345</li>
-                 <li>info@edupro.school</li>
-                 <li>(555) 123-4567</li>
-               </ul>
-             </div>
+              </div>
+            ))}
           </div>
-          <div className="mt-12 pt-8 border-t border-slate-800 text-sm text-center">
-            <p>&copy; {new Date().getFullYear()} EduPro School Management. All rights reserved.</p>
+
+          <div className="pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <p className="text-sm text-gray-500">
+              &copy; {new Date().getFullYear()} Sunshine School. All rights reserved.
+            </p>
+            <div className="flex items-center gap-6">
+              <a href="#" className="text-sm text-gray-500 hover:text-gray-400 transition-colors">Privacy Policy</a>
+              <a href="#" className="text-sm text-gray-500 hover:text-gray-400 transition-colors">Terms of Service</a>
+            </div>
           </div>
         </div>
       </footer>
     </div>
   );
-};
-
-export default PublicLayout;
+}

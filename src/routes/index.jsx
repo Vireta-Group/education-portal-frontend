@@ -167,7 +167,7 @@ const AppRoutes = () => {
   return (
     <Routes>
       {/* Public Routes */}
-      <Route path="/" element={<Landing />} />
+      <Route path="/" element={<Navigate to="/public" replace />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       
