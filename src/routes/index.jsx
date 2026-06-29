@@ -154,7 +154,7 @@ const AppRoutes = () => {
       <Route path="/register" element={<Register />} />
       
       {/* Public Portfolio Routing */}
-      <Route path="/pubiles" element={<PublicLayout />}>
+      <Route path="/public" element={<PublicLayout />}>
         <Route index element={<PortfolioHome />} />
         <Route path="about" element={<About />} />
         <Route path="academic-life" element={<AcademicLife />} />

@@ -1,7 +1,17 @@
+import { useState } from 'react';
 import { Outlet, Link } from 'react-router-dom';
-import { BookOpen, LogIn, Menu } from 'lucide-react';
+import { BookOpen, LogIn, Menu, X } from 'lucide-react';
 
 const PublicLayout = () => {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const navLinks = [
+    { label: 'About Us', to: '/public/about' },
+    { label: 'Academics', to: '/public/academic-life' },
+    { label: 'Co-Curricular', to: '/public/co-curricular' },
+    { label: 'Admissions', to: '/public/admission' },
+  ];
+
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans text-slate-900 selection:bg-indigo-100 selection:text-indigo-900">
       {/* Navigation */}
@@ -9,19 +19,24 @@ const PublicLayout = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-20">
             {/* Logo */}
-            <div className="flex items-center gap-2">
+            <Link to="/public" className="flex items-center gap-2">
               <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center shadow-md">
                  <BookOpen className="text-white w-6 h-6" />
               </div>
               <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-700">EduPro</span>
-            </div>
+            </Link>
 
             {/* Desktop Menu */}
             <div className="hidden md:flex items-center gap-8">
-              <a href="#about" className="text-sm font-medium text-slate-600 hover:text-indigo-600 transition-colors">About Us</a>
-              <a href="#academics" className="text-sm font-medium text-slate-600 hover:text-indigo-600 transition-colors">Academics</a>
-              <a href="#facilities" className="text-sm font-medium text-slate-600 hover:text-indigo-600 transition-colors">Facilities</a>
-              <a href="#admissions" className="text-sm font-medium text-slate-600 hover:text-indigo-600 transition-colors">Admissions</a>
+              {navLinks.map((link) => (
+                <Link
+                  key={link.to}
+                  to={link.to}
+                  className="text-sm font-medium text-slate-600 hover:text-indigo-600 transition-colors"
+                >
+                  {link.label}
+                </Link>
+              ))}
             </div>
 
             {/* CTA Buttons */}
@@ -33,12 +48,40 @@ const PublicLayout = () => {
 
             {/* Mobile Menu Button */}
             <div className="md:hidden flex items-center">
-              <button className="text-slate-600 hover:text-slate-900">
-                <Menu size={24} />
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="text-slate-600 hover:text-slate-900 p-2"
+              >
+                {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
               </button>
             </div>
           </div>
         </div>
+
+        {/* Mobile Menu Dropdown */}
+        {mobileMenuOpen && (
+          <div className="md:hidden border-t border-slate-200 bg-white">
+            <div className="px-4 py-4 space-y-3">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.to}
+                  to={link.to}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block text-sm font-medium text-slate-600 hover:text-indigo-600 transition-colors py-2"
+                >
+                  {link.label}
+                </Link>
+              ))}
+              <Link
+                to="/login"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block text-sm font-semibold text-indigo-600 hover:text-indigo-700 transition-colors py-2 border-t border-slate-100 pt-4 mt-2"
+              >
+                <LogIn size={16} className="inline mr-2" />Staff / Student Portal
+              </Link>
+            </div>
+          </div>
+        )}
       </nav>
 
       {/* Main Content Area */}
@@ -61,11 +104,11 @@ const PublicLayout = () => {
              </div>
              <div>
                <h3 className="text-slate-100 font-semibold mb-4">Quick Links</h3>
-               <ul className="space-y-2 text-sm">
-                 <li><a href="#about" className="hover:text-indigo-400 transition-colors">About Us</a></li>
-                 <li><a href="#academics" className="hover:text-indigo-400 transition-colors">Academics</a></li>
-                 <li><a href="#admissions" className="hover:text-indigo-400 transition-colors">Admissions</a></li>
-               </ul>
+                <ul className="space-y-2 text-sm">
+                  <li><Link to="/public/about" className="hover:text-indigo-400 transition-colors">About Us</Link></li>
+                  <li><Link to="/public/academic-life" className="hover:text-indigo-400 transition-colors">Academics</Link></li>
+                  <li><Link to="/public/admission" className="hover:text-indigo-400 transition-colors">Admissions</Link></li>
+                </ul>
              </div>
              <div>
                <h3 className="text-slate-100 font-semibold mb-4">Contact</h3>
