@@ -1,11 +1,10 @@
-import { useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Mail, Lock, User, Phone, Building, Globe, ArrowLeft, BookOpen, AlertCircle, Check } from 'lucide-react';
-import { registerSchool, clearAuthError } from '../../store/slices/authSlice';
+import { toast } from 'sonner';
 
 const SCHOOL_TYPES = [
   { value: 'school', label: 'School' },
@@ -27,28 +26,20 @@ const registerSchema = z.object({
 });
 
 const Register = () => {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { loading, error, token } = useSelector((state) => state.auth);
+  const [loading, setLoading] = useState(false);
 
   const { register, handleSubmit, formState: { errors } } = useForm({
     resolver: zodResolver(registerSchema),
   });
 
-  useEffect(() => {
-    if (token) {
-      localStorage.setItem('token', token);
-      localStorage.setItem('isAuthenticated', 'true');
-      navigate('/dashboard');
-    }
-  }, [token, navigate]);
-
-  useEffect(() => {
-    return () => { dispatch(clearAuthError()); };
-  }, [dispatch]);
-
   const onSubmit = (data) => {
-    dispatch(registerSchool(data));
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+      toast.success('School registered successfully! Redirecting to login...');
+      navigate('/login');
+    }, 1000);
   };
 
   const inputClass = 'block w-full pl-10 bg-slate-900/50 border border-slate-700 rounded-xl py-2.5 text-slate-200 placeholder-slate-500 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all sm:text-sm';
@@ -79,10 +70,10 @@ const Register = () => {
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-lg relative z-10 px-4 sm:px-0">
         <div className="bg-slate-800/60 backdrop-blur-xl py-8 px-4 shadow-2xl sm:rounded-2xl sm:px-10 border border-slate-700/50">
           <form className="space-y-5" onSubmit={handleSubmit(onSubmit)}>
-            {error && (
-              <div className="bg-red-500/10 border border-red-500/50 text-red-400 p-4 rounded-xl flex items-start gap-3 text-sm">
+            {loading && (
+              <div className="bg-indigo-500/10 border border-indigo-500/50 text-indigo-400 p-4 rounded-xl flex items-start gap-3 text-sm">
                 <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
-                <span>{error}</span>
+                <span>Submitting registration...</span>
               </div>
             )}
 

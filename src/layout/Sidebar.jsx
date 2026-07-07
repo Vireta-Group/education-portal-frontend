@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { NavLink, Link, useNavigate, useLocation } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 import {
   Building2, GraduationCap, BookOpen, Calculator, FileText, Settings, Bus, UserCircle2, Library, Calendar, ShieldCheck, Stethoscope, Award, Coffee, Home, UserCheck, MessageSquare, Briefcase, LogOut, ChevronDown, ChevronRight, Users, ClipboardList, Clock, PenTool, Files, Video, Activity, User, CalendarClock, CircleDollarSign, ArrowRightLeft, CalendarRange, Building, Utensils, ShieldAlert, TrendingUp, UserPlus, CircleDot
 } from 'lucide-react';
+import { logoutUser } from '../store/slices/authSlice';
 
 const MODULES = [
   { id: 'dashboard', name: 'Dashboard', icon: Home, path: '/dashboard' },
@@ -250,6 +252,7 @@ const MODULES = [
 const Sidebar = ({ isOpen }) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const dispatch = useDispatch();
   const [expandedMenus, setExpandedMenus] = useState({});
 
   const toggleMenu = (e, id, hasSubItems) => {
@@ -260,7 +263,7 @@ const Sidebar = ({ isOpen }) => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('isAuthenticated');
+    dispatch(logoutUser());
     navigate('/login');
   };
 
