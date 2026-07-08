@@ -4,6 +4,13 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import MainLayout from '../layout/MainLayout';
 import PublicLayout from '../layout/PublicLayout';
 import ProtectedRoute from '../features/auth/ProtectedRoute';
+import OnboardingLayout from '../layout/OnboardingLayout';
+
+// Onboarding Steps
+import OnboardingStep1 from '../pages/onboarding/Step1';
+import OnboardingStep2 from '../pages/onboarding/Step2';
+import OnboardingStep3 from '../pages/onboarding/Step3';
+import OnboardingStep4 from '../pages/onboarding/Step4';
 
 // Features - Portfolio
 import PortfolioHome from '../pages/public/Home';
@@ -162,6 +169,15 @@ const AppRoutes = () => {
         <Route path="co-curricular" element={<CoCurricular />} />
         <Route path="newsroom" element={<Newsroom />} />
         <Route path="contact" element={<Contact />} />
+      </Route>
+
+      {/* Onboarding Routes */}
+      <Route path="/onboarding" element={<OnboardingLayout />}>
+        <Route index element={<Navigate to="step-1" replace />} />
+        <Route path="step-1" element={<OnboardingStep1 />} />
+        <Route path="step-2" element={<OnboardingStep2 />} />
+        <Route path="step-3" element={<OnboardingStep3 />} />
+        <Route path="step-4" element={<OnboardingStep4 />} />
       </Route>
 
       {/* Private Routes */}

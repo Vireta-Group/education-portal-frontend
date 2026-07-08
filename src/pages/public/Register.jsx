@@ -1,17 +1,18 @@
-import { useState } from 'react';
+import { useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Mail, Lock, User, Phone, Building, Globe, ArrowLeft, BookOpen, AlertCircle, Check } from 'lucide-react';
-import { toast } from 'sonner';
+import { Mail, Lock, User, Phone, Building, Globe, ArrowLeft, BookOpen, AlertCircle, Check, ArrowRight } from 'lucide-react';
+import { registerSchool, clearAuthError } from '../../store/slices/authSlice';
 
 const SCHOOL_TYPES = [
-  { value: 'school', label: 'School' },
-  { value: 'college', label: 'College' },
-  { value: 'university', label: 'University' },
-  { value: 'madrasa', label: 'Madrasa' },
-  { value: 'kindergarten', label: 'Kindergarten' },
+  { value: 'Primary', label: 'Primary' },
+  { value: 'High School', label: 'High School' },
+  { value: 'College', label: 'College' },
+  { value: 'Madrasa', label: 'Madrasa' },
+  { value: 'Kindergarten', label: 'Kindergarten' },
 ];
 
 const registerSchema = z.object({
@@ -25,21 +26,36 @@ const registerSchema = z.object({
   admin_password: z.string().min(1, 'Password is required'),
 });
 
+const ONBOARDING_STEPS = [
+  { number: 1, label: 'School Info' },
+  { number: 2, label: 'Academic Calendar' },
+  { number: 3, label: 'Address & Principal' },
+  { number: 4, label: 'Branding & Notifications' },
+];
+
 const Register = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
+  const { loading, error, token } = useSelector((state) => state.auth);
 
   const { register, handleSubmit, formState: { errors } } = useForm({
     resolver: zodResolver(registerSchema),
   });
 
+  useEffect(() => {
+    if (token) {
+      localStorage.setItem('token', token);
+      localStorage.setItem('isAuthenticated', 'true');
+      navigate('/onboarding/step-1');
+    }
+  }, [token, navigate]);
+
+  useEffect(() => {
+    return () => { dispatch(clearAuthError()); };
+  }, [dispatch]);
+
   const onSubmit = (data) => {
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      toast.success('School registered successfully! Redirecting to login...');
-      navigate('/login');
-    }, 1000);
+    dispatch(registerSchool(data));
   };
 
   const inputClass = 'block w-full pl-10 bg-slate-900/50 border border-slate-700 rounded-xl py-2.5 text-slate-200 placeholder-slate-500 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all sm:text-sm';
@@ -54,26 +70,47 @@ const Register = () => {
       <div className="absolute bottom-10 left-10 w-[500px] h-[500px] bg-emerald-500 rounded-full mix-blend-multiply filter blur-[120px] opacity-30 animate-pulse animation-delay-2000"></div>
 
       <div className="sm:mx-auto sm:w-full sm:max-w-lg relative z-10">
-        <div className="flex justify-center mb-6">
+        <div className="flex justify-center mb-4">
           <div className="w-16 h-16 bg-gradient-to-tr from-emerald-600 to-indigo-500 rounded-2xl flex items-center justify-center shadow-[0_0_40px_rgba(16,185,129,0.4)]">
             <BookOpen className="text-white w-8 h-8" />
           </div>
         </div>
-        <h2 className="mt-2 text-center text-3xl font-extrabold text-white tracking-tight">
-          Register Your School
+        <h2 className="text-center text-3xl font-extrabold text-white tracking-tight">
+          Create Your School
         </h2>
-        <p className="mt-2 text-center text-sm text-slate-400">
-          Create your EduPro school management account
+        <p className="mt-1 text-center text-sm text-slate-400">
+          Create admin account &mdash; then complete 4 quick setup steps
         </p>
       </div>
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-lg relative z-10 px-4 sm:px-0">
+      {/* Onboarding steps preview */}
+      <div className="mt-6 sm:mx-auto sm:w-full sm:max-w-lg relative z-10 px-4 sm:px-0">
+        <div className="bg-slate-800/30 backdrop-blur-sm rounded-xl border border-slate-700/30 p-4">
+          <div className="flex items-center justify-between">
+            {ONBOARDING_STEPS.map((s, i) => (
+              <div key={s.number} className="flex items-center gap-0 flex-1">
+                <div className="flex flex-col items-center">
+                  <div className="w-8 h-8 rounded-full bg-slate-700 text-slate-500 flex items-center justify-center text-xs font-bold border border-slate-600">
+                    {s.number}
+                  </div>
+                  <span className="text-[10px] text-slate-500 mt-1 hidden sm:block whitespace-nowrap">{s.label}</span>
+                </div>
+                {i < ONBOARDING_STEPS.length - 1 && (
+                  <div className="flex-1 h-px bg-slate-700 mx-2 mt-[-1.25rem]" />
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-6 sm:mx-auto sm:w-full sm:max-w-lg relative z-10 px-4 sm:px-0">
         <div className="bg-slate-800/60 backdrop-blur-xl py-8 px-4 shadow-2xl sm:rounded-2xl sm:px-10 border border-slate-700/50">
           <form className="space-y-5" onSubmit={handleSubmit(onSubmit)}>
-            {loading && (
-              <div className="bg-indigo-500/10 border border-indigo-500/50 text-indigo-400 p-4 rounded-xl flex items-start gap-3 text-sm">
+            {error && (
+              <div className="bg-red-500/10 border border-red-500/50 text-red-400 p-4 rounded-xl flex items-start gap-3 text-sm">
                 <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
-                <span>Submitting registration...</span>
+                <span>{error}</span>
               </div>
             )}
 
@@ -169,10 +206,10 @@ const Register = () => {
                 {loading ? (
                   <span className="flex items-center gap-2">
                     <span className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-                    Registering...
+                    Creating Account...
                   </span>
                 ) : (
-                  <span className="flex items-center gap-2"><Check className="w-5 h-5" /> Register School</span>
+                  <span className="flex items-center gap-2"><Check className="w-5 h-5" /> Create Account <ArrowRight className="w-4 h-4" /></span>
                 )}
               </button>
             </div>

@@ -11,6 +11,27 @@ const clearAuthCookies = () => {
   }
 };
 
+export const registerSchool = createAsyncThunk(
+  'auth/register',
+  async (formData, { rejectWithValue }) => {
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify(formData),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        const msg = data.message || Object.values(data.errors || {}).flat().join(', ') || 'Registration failed';
+        return rejectWithValue(msg);
+      }
+      return data.data;
+    } catch (err) {
+      return rejectWithValue(err.message || 'Network error');
+    }
+  }
+);
+
 export const loginUser = createAsyncThunk(
   'auth/login',
   async (credentials, { rejectWithValue }) => {
@@ -59,6 +80,7 @@ export const logoutUser = createAsyncThunk(
 const initialState = {
   loading: false,
   error: null,
+  onboardingStep: null,
   token: localStorage.getItem('token') || null,
   user: null,
   tenant: null,
@@ -84,6 +106,21 @@ const authSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      .addCase(registerSchool.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(registerSchool.fulfilled, (state, action) => {
+        state.loading = false;
+        state.token = action.payload.token;
+        state.tenant = action.payload.tenant;
+        state.admin = action.payload.admin;
+        state.onboardingStep = action.payload.onboarding_step ?? null;
+      })
+      .addCase(registerSchool.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
       .addCase(loginUser.pending, (state) => {
         state.loading = true;
         state.error = null;
