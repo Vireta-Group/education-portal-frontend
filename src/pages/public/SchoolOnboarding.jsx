@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { School, ChevronRight, ChevronLeft, Check, Building, Globe, Calendar, Mail, Phone, MapPin, User, Palette, Bell, Image, Clock, BookOpen, Hash, Monitor, CheckCircle2, Sparkles, AlertCircle } from 'lucide-react';
 import { saveSetupStep, fetchSetupStatus, clearSetupError } from '../../store/slices/setupSlice';
+import ThemeToggle from '../../components/ThemeToggle';
 
 const SCHOOL_TYPES = ['Primary', 'Secondary', 'Higher Secondary', 'Madrasa', 'Kindergarten'];
 const BOARDS = ['Dhaka', 'Rajshahi', 'Comilla', 'Jessore', 'Chittagong', 'Barisal', 'Sylhet', 'Dinajpur', 'Mymensingh'];
@@ -149,6 +150,7 @@ const SchoolOnboarding = () => {
 
   return (
     <div className="min-h-screen bg-white dark:bg-secondary-900 py-12 px-4 sm:px-6 lg:px-8">
+      <ThemeToggle />
       <div className="max-w-3xl mx-auto">
         <div className="text-center mb-10">
           <div className="flex justify-center mb-4">

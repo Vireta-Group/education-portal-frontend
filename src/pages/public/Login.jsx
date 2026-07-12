@@ -6,6 +6,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Phone, Lock, ArrowRight, AlertCircle, LogIn, Sparkles, School } from 'lucide-react';
 import { loginUser, clearAuthError } from '../../store/slices/authSlice';
+import ThemeToggle from '../../components/ThemeToggle';
 
 const loginSchema = z.object({
   phone: z.string().min(1, 'Phone is required').max(30),
@@ -39,6 +40,7 @@ const Login = () => {
 
   return (
     <div className="min-h-screen bg-white dark:bg-secondary-900 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <ThemeToggle />
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="flex justify-center mb-6">
           <div className="w-14 h-14 bg-gradient-to-br from-indigo-600 to-indigo-700 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/25">

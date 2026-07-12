@@ -6,6 +6,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Mail, Lock, User, Phone, Building, Globe, ArrowLeft, School, AlertCircle, Check, ChevronRight, ChevronLeft } from 'lucide-react';
 import { registerSchool, clearAuthError } from '../../store/slices/authSlice';
+import ThemeToggle from '../../components/ThemeToggle';
 
 const SCHOOL_TYPES = [
   { value: 'school', label: 'School' },
@@ -89,6 +90,7 @@ const Register = () => {
 
   return (
     <div className="min-h-screen bg-white dark:bg-secondary-900 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <ThemeToggle />
       <div className="sm:mx-auto sm:w-full sm:max-w-lg">
         <div className="flex justify-center mb-6">
           <div className="w-16 h-16 bg-gradient-to-br from-indigo-600 to-indigo-700 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-500/25">
