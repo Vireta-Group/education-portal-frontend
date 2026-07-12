@@ -46,7 +46,7 @@ const Register = () => {
     if (token) {
       localStorage.setItem('token', token);
       localStorage.setItem('isAuthenticated', 'true');
-      navigate('/dashboard');
+      navigate('/school-onboarding');
     }
   }, [token, navigate]);
 

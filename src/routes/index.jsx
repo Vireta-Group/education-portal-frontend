@@ -13,11 +13,11 @@ import Admission from '../pages/public/Admission';
 import CoCurricular from '../pages/public/CoCurricular';
 import Newsroom from '../pages/public/Newsroom';
 import Contact from '../pages/public/Contact';
-import Landing from '../pages/public/Landing';
 
 // Features - Auth
 import Login from '../pages/public/Login';
 import Register from '../pages/public/Register';
+import SchoolOnboarding from '../pages/public/SchoolOnboarding';
 
 // Features - App Modules
 import Dashboard from '../pages/private/Dashboard';
@@ -170,6 +170,7 @@ const AppRoutes = () => {
       <Route path="/" element={<Navigate to="/public" replace />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/school-onboarding" element={<SchoolOnboarding />} />
       
       {/* Public Portfolio Routing */}
       <Route path="/public" element={<PublicLayout />}>
@@ -354,8 +355,8 @@ const AppRoutes = () => {
         <Route index element={<Dashboard />} />
       </Route>
       
-      {/* Catch-all redirect to Landing */}
-      <Route path="*" element={<Landing />} />
+      {/* Catch-all redirect to Public Home */}
+      <Route path="*" element={<Navigate to="/public" replace />} />
     </Routes>
   );
 };
