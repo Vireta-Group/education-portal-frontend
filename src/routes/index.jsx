@@ -23,6 +23,7 @@ import SchoolOnboarding from '../pages/public/SchoolOnboarding';
 import Dashboard from '../pages/private/Dashboard';
 
 // Academic Management Modules
+import AcademicYear from '../pages/private/Academic-Management/AcademicYear';
 import ClassSection from '../pages/private/Academic-Management/ClassSection';
 import Syllabus from '../pages/private/Academic-Management/Syllabus';
 import ClassRoutine from '../pages/private/Academic-Management/ClassRoutine';
@@ -195,6 +196,7 @@ const AppRoutes = () => {
                 <Route path="dashboard" element={<Dashboard />} />
         <Route path="academics">
           <Route index element={<AcademicDashboard />} />
+          <Route path="academic-years" element={<AcademicYear />} />
           <Route path="class-section" element={<ClassSection />} />
           <Route path="syllabus" element={<Syllabus />} />
           <Route path="class-routine" element={<ClassRoutine />} />

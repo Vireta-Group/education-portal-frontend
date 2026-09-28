@@ -1,9 +1,10 @@
 import React from 'react';
 import ModuleDashboard from '../../../components/ModuleDashboard';
-import { Layers } from 'lucide-react';
+import { Layers, CalendarRange } from 'lucide-react';
 
 const Dashboard = () => {
   const subModules = [
+    { path: 'academic-years', title: 'Academic Years', description: 'Manage academic years, activation and archiving.', icon: CalendarRange },
     { path: 'class-section', title: 'Class & Section', description: 'Manage classes and sections.', icon: Layers },
     { path: 'syllabus', title: 'Syllabus', description: 'Manage syllabus for different classes.', icon: Layers },
     { path: 'class-routine', title: 'Class Routine', description: 'Manage class schedules.', icon: Layers },

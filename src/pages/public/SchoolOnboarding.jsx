@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { School, ChevronRight, ChevronLeft, Check, Building, Globe, Calendar, Mail, Phone, MapPin, User, Palette, Bell, Image, Clock, BookOpen, Hash, Monitor, CheckCircle2, Sparkles, AlertCircle } from 'lucide-react';
-import { saveSetupStep, fetchSetupStatus, clearSetupError } from '../../store/slices/setupSlice';
+import { saveSetupStep, fetchSetupStatus, completeOnboarding, clearSetupError } from '../../store/slices/setupSlice';
 import ThemeToggle from '../../components/ThemeToggle';
 
 const SCHOOL_TYPES = ['Primary', 'Secondary', 'Higher Secondary', 'Madrasa', 'Kindergarten'];
@@ -12,7 +12,7 @@ const LANGUAGES = ['Bengali', 'English', 'Arabic'];
 const TIMEZONES = ['Asia/Dhaka', 'Asia/Kolkata', 'UTC'];
 const DATE_FORMATS = ['DD/MM/YYYY', 'MM/DD/YYYY', 'YYYY-MM-DD'];
 const CURRENCIES = ['BDT', 'USD', 'INR'];
-const DAYS = ['Sat', 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+const DAYS = ['sat', 'sun', 'mon', 'tue', 'wed', 'thu', 'fri'];
 
 const STEPS = [
   { title: 'School Details', subtitle: 'Basic information about your institution' },
@@ -34,14 +34,21 @@ const SchoolOnboarding = () => {
     division: '', district: '', upazila: '', village_area: '', google_map_url: '',
     principal_name_en: '', principal_name_bn: '', principal_designation: '', principal_mobile: '', principal_email: '',
     primary_color: '#4F46E5', secondary_color: '#0F172A', accent_color: '#10B981', logo_primary_url: '', logo_landscape_url: '', logo_dark_url: '', favicon_url: '', font_family: 'Inter', custom_css: '',
-    sms: true, email: true, push: true, whatsapp: true,
+    notif_sms: true, notif_email: true, notif_push: true, notif_whatsapp: true,
   });
   const [submitted, setSubmitted] = useState(false);
   const [stepError, setStepError] = useState('');
 
   useEffect(() => {
     if (!token) { navigate('/login'); return; }
-    dispatch(fetchSetupStatus());
+    dispatch(fetchSetupStatus()).then((res) => {
+      if (res.meta.requestStatus === 'fulfilled') {
+        const apiStep = res.payload?.current_step;
+        if (apiStep > 1 && apiStep <= 4) {
+          setStep(apiStep - 1);
+        }
+      }
+    });
   }, [token, navigate, dispatch]);
 
   useEffect(() => {
@@ -100,7 +107,7 @@ const SchoolOnboarding = () => {
       primary_color: form.primary_color, secondary_color: form.secondary_color, accent_color: form.accent_color,
       logo_primary_url: form.logo_primary_url, logo_landscape_url: form.logo_landscape_url, logo_dark_url: form.logo_dark_url,
       favicon_url: form.favicon_url, font_family: form.font_family, custom_css: form.custom_css,
-      notifications: { sms: form.sms, email: form.email, push: form.push, whatsapp: form.whatsapp },
+      notifications: { sms: form.notif_sms, email: form.notif_email, push: form.notif_push, whatsapp: form.notif_whatsapp },
     };
   };
 
@@ -120,7 +127,12 @@ const SchoolOnboarding = () => {
     const payload = buildStepPayload(3);
     const result = await dispatch(saveSetupStep({ step: 4, data: payload }));
     if (result.meta.requestStatus === 'fulfilled') {
-      setSubmitted(true);
+      const finishResult = await dispatch(completeOnboarding());
+      if (finishResult.meta.requestStatus === 'fulfilled') {
+        setSubmitted(true);
+      } else {
+        setStepError('Step 4 saved but failed to complete onboarding. Please try again.');
+      }
     }
   };
 
@@ -326,7 +338,7 @@ const SchoolOnboarding = () => {
                 <div className="flex flex-wrap gap-2 mt-1.5">
                   {DAYS.map((day) => (
                     <button type="button" key={day} onClick={() => toggleDay(day)} className={`px-4 py-2 rounded-lg text-xs font-semibold transition-all border ${form.working_days.includes(day) ? 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 border-indigo-300 dark:border-indigo-700' : 'bg-white dark:bg-secondary-900 text-gray-500 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:border-gray-300'}`}>
-                      {day}
+                      {day.charAt(0).toUpperCase() + day.slice(1)}
                     </button>
                   ))}
                 </div>
@@ -474,13 +486,16 @@ const SchoolOnboarding = () => {
                   { key: 'email', label: 'Email', icon: '📧' },
                   { key: 'push', label: 'Push', icon: '🔔' },
                   { key: 'whatsapp', label: 'WhatsApp', icon: '💚' },
-                ].map(({ key, label, icon }) => (
-                  <button type="button" key={key} onClick={() => update(key, !form[key])} className={`flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all ${form[key] ? 'bg-indigo-50 dark:bg-indigo-900/20 border-indigo-400 dark:border-indigo-600' : 'bg-white dark:bg-secondary-900 border-gray-200 dark:border-gray-700 hover:border-gray-300'}`}>
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center text-lg ${form[key] ? 'bg-indigo-100 dark:bg-indigo-800' : 'bg-gray-100 dark:bg-gray-800'}`}><span>{icon}</span></div>
-                    <span className={`text-xs font-semibold ${form[key] ? 'text-indigo-700 dark:text-indigo-300' : 'text-gray-500 dark:text-gray-400'}`}>{label}</span>
-                    {form[key] && <Check className="w-3.5 h-3.5 text-indigo-500" />}
-                  </button>
-                ))}
+                ].map(({ key, label, icon }) => {
+                  const fieldKey = 'notif_' + key;
+                  return (
+                    <button type="button" key={key} onClick={() => update(fieldKey, !form[fieldKey])} className={`flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all ${form[fieldKey] ? 'bg-indigo-50 dark:bg-indigo-900/20 border-indigo-400 dark:border-indigo-600' : 'bg-white dark:bg-secondary-900 border-gray-200 dark:border-gray-700 hover:border-gray-300'}`}>
+                      <div className={`w-10 h-10 rounded-full flex items-center justify-center text-lg ${form[fieldKey] ? 'bg-indigo-100 dark:bg-indigo-800' : 'bg-gray-100 dark:bg-gray-800'}`}><span>{icon}</span></div>
+                      <span className={`text-xs font-semibold ${form[fieldKey] ? 'text-indigo-700 dark:text-indigo-300' : 'text-gray-500 dark:text-gray-400'}`}>{label}</span>
+                      {form[fieldKey] && <Check className="w-3.5 h-3.5 text-indigo-500" />}
+                    </button>
+                  );
+                })}
               </div>
 
               <hr className="border-gray-100 dark:border-gray-700" />

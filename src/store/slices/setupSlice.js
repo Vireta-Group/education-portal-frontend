@@ -5,7 +5,7 @@ export const saveSetupStep = createAsyncThunk(
   async ({ step, data }, { getState, rejectWithValue }) => {
     const token = getState().auth.token;
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/setup/step/${step}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}api/setup/step/${step}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}`, Accept: 'application/json' },
         body: JSON.stringify(data),
@@ -27,7 +27,7 @@ export const fetchSetupStep = createAsyncThunk(
   async ({ step }, { getState, rejectWithValue }) => {
     const token = getState().auth.token;
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/setup/step/${step}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}api/setup/step/${step}`, {
         method: 'GET',
         headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' },
       });
@@ -45,12 +45,30 @@ export const fetchSetupStatus = createAsyncThunk(
   async (_, { getState, rejectWithValue }) => {
     const token = getState().auth.token;
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/setup/status`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}api/setup/status`, {
         method: 'GET',
         headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' },
       });
       const result = await res.json();
       if (!res.ok) throw new Error(result.message || 'Failed to fetch status');
+      return result.data;
+    } catch (err) {
+      return rejectWithValue(err.message);
+    }
+  }
+);
+
+export const completeOnboarding = createAsyncThunk(
+  'setup/complete',
+  async (_, { getState, rejectWithValue }) => {
+    const token = getState().auth.token;
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}api/setup/finish`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' },
+      });
+      const result = await res.json();
+      if (!res.ok) throw new Error(result.message || 'Failed to complete onboarding');
       return result.data;
     } catch (err) {
       return rejectWithValue(err.message);
@@ -99,6 +117,12 @@ const setupSlice = createSlice({
         state.status = action.payload;
       })
       .addCase(fetchSetupStatus.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(completeOnboarding.pending, (state) => { state.loading = true; state.error = null; })
+      .addCase(completeOnboarding.fulfilled, (state) => { state.loading = false; })
+      .addCase(completeOnboarding.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });
