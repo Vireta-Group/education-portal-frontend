@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Plus, Power, Archive, Copy, Loader2, CheckCircle2, XCircle } from 'lucide-react';
+import { ArrowLeft, Plus, Power, Archive, Copy, Loader2, CheckCircle2, XCircle, Eye, X } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'sonner';
 import { Button } from '../../../components/ui/Button';
@@ -10,13 +10,14 @@ import { DatePicker } from '../../../components/ui/DatePicker';
 import { StatusBadge } from '../../../components/ui/StatusBadge';
 import {
   fetchAcademicYears,
+  fetchAcademicYear,
   createAcademicYear,
   activateAcademicYear,
   archiveAcademicYear,
   copyAcademicYear,
   clearAcademicYearError,
   clearAcademicYearMessage,
-} from '../../../store/slices/academicYearSlice';
+} from '../../../store/slices/Academic-Management/academicYearSlice';
 
 const COPY_SCOPES = [
   { value: 'classes', label: 'Classes' },
@@ -28,9 +29,10 @@ const COPY_SCOPES = [
 
 const AcademicYear = () => {
   const dispatch = useDispatch();
-  const { years, loading, error, lastMessage } = useSelector((state) => state.academicYear);
+  const { years, currentYear, loading, error, lastMessage } = useSelector((state) => state.academicYear);
 
   const [showForm, setShowForm] = useState(false);
+  const [viewing, setViewing] = useState(null);
   const [form, setForm] = useState({
     year_name: '',
     year_name_bn: '',
@@ -112,6 +114,13 @@ const AcademicYear = () => {
   };
 
   const isBusy = (id) => loading && actionId === id;
+
+  const handleView = (year) => {
+    setViewing(year.id);
+    dispatch(fetchAcademicYear(year.id));
+  };
+
+  const detail = viewing && currentYear?.id === viewing ? currentYear : null;
 
   return (
     <div className="p-6 space-y-6">
@@ -245,6 +254,15 @@ const AcademicYear = () => {
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center justify-end gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleView(year)}
+                          title="View"
+                          className="text-blue-500 hover:text-blue-600"
+                        >
+                          <Eye size={14} />
+                        </Button>
                         {!year.is_current && !year.is_locked && (
                           <Button
                             variant="outline"
@@ -331,6 +349,61 @@ const AcademicYear = () => {
           Structure will be duplicated when Class/Section modules are available.
         </p>
       </div>
+
+      {viewing && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4"
+          onClick={() => setViewing(null)}
+        >
+          <div
+            className="w-full max-w-2xl max-h-[85vh] overflow-y-auto rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold text-slate-900 dark:text-white">Academic Year Details</h2>
+              <button
+                onClick={() => setViewing(null)}
+                className="p-1 rounded-md text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+              >
+                <X size={18} />
+              </button>
+            </div>
+            {detail ? (
+              <div>
+                {[
+                  ['Year Name', detail.year_name],
+                  ['Year Name (Bangla)', detail.year_name_bn],
+                  ['Start Date', detail.start_date?.slice(0, 10)],
+                  ['End Date', detail.end_date?.slice(0, 10)],
+                  ['Year Status', detail.year_status],
+                  ['Current', detail.is_current ? 'Yes' : 'No'],
+                  ['Locked', detail.is_locked ? 'Yes' : 'No'],
+                  ['Locked At', detail.locked_at],
+                  ['Result Published', detail.result_published ? 'Yes' : 'No'],
+                  ['Promotion Completed', detail.promotion_completed ? 'Yes' : 'No'],
+                  ['Fee Settled', detail.fee_settled ? 'Yes' : 'No'],
+                  ['Library Cleared', detail.library_cleared ? 'Yes' : 'No'],
+                  ['Copied From Year ID', detail.copied_from_year_id],
+                  ['Copy Scope', detail.copy_scope],
+                  ['Demo', detail.is_demo ? 'Yes' : 'No'],
+                  ['Record Status', detail.status],
+                  ['Branch ID', detail.branch_id],
+                  ['Tenant ID', detail.tenant_id],
+                ].map(([label, value]) => (
+                  <div key={label} className="flex justify-between gap-4 py-2 border-b border-slate-100 dark:border-slate-800 last:border-0">
+                    <span className="text-sm text-slate-500 dark:text-slate-400">{label}</span>
+                    <span className="text-sm font-medium text-slate-900 dark:text-slate-200 text-right">{value ?? '—'}</span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="py-8 text-center text-slate-500">
+                <Loader2 className="mx-auto h-6 w-6 animate-spin" />
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

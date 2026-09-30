@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { NavLink, Link, useNavigate, useLocation } from 'react-router-dom';
 import {
-  Building2, GraduationCap, BookOpen, Calculator, FileText, Settings, Bus, UserCircle2, Library, Calendar, ShieldCheck, Stethoscope, Award, Coffee, Home, UserCheck, MessageSquare, Briefcase, LogOut, ChevronDown, ChevronRight, Users, ClipboardList, Clock, PenTool, Files, Video, Activity, User, CalendarClock, CircleDollarSign, ArrowRightLeft, CalendarRange, Building, Utensils, ShieldAlert, TrendingUp, UserPlus, CircleDot
+  Building2, GraduationCap, BookOpen, Calculator, FileText, Settings, Bus, UserCircle2, Library, Calendar, ShieldCheck, Stethoscope, Award, Coffee, Home, UserCheck, MessageSquare, Briefcase, LogOut, ChevronDown, ChevronRight, Users, User, CalendarClock, CircleDollarSign, ArrowRightLeft, CalendarRange, Building, Utensils, ShieldAlert, TrendingUp, UserPlus, CircleDot
 } from 'lucide-react';
 
 const MODULES = [
@@ -12,13 +12,10 @@ const MODULES = [
     icon: BookOpen, 
     path: '/academics',
     subItems: [
-      { id: 'class-section', name: 'Class & Section', icon: Users, path: '/academics/class-section' },
-      { id: 'syllabus', name: 'Syllabus', icon: ClipboardList, path: '/academics/syllabus' },
-      { id: 'class-routine', name: 'Class Routine', icon: Clock, path: '/academics/class-routine' },
-      { id: 'homework', name: 'Homework', icon: PenTool, path: '/academics/homework' },
-      { id: 'study-material', name: 'Study Material', icon: Files, path: '/academics/study-material' },
-      { id: 'online-class', name: 'Online Class', icon: Video, path: '/academics/online-class' },
-      { id: 'co-curricular', name: 'Co-curricular Activity', icon: Activity, path: '/academics/co-curricular' },
+      { id: 'academic-years', name: 'Academic Years', icon: CalendarRange, path: '/academics/academic-years' },
+      { id: 'classes', name: 'Classes', icon: Users, path: '/academics/classes' },
+      { id: 'sections', name: 'Sections', icon: CircleDot, path: '/academics/sections' },
+      { id: 'subjects', name: 'Subjects', icon: BookOpen, path: '/academics/subjects' },
     ]
   },
   { 

@@ -24,13 +24,9 @@ import Dashboard from '../pages/private/Dashboard';
 
 // Academic Management Modules
 import AcademicYear from '../pages/private/Academic-Management/AcademicYear';
-import ClassSection from '../pages/private/Academic-Management/ClassSection';
-import Syllabus from '../pages/private/Academic-Management/Syllabus';
-import ClassRoutine from '../pages/private/Academic-Management/ClassRoutine';
-import Homework from '../pages/private/Academic-Management/Homework';
-import StudyMaterial from '../pages/private/Academic-Management/StudyMaterial';
-import OnlineClass from '../pages/private/Academic-Management/OnlineClass';
-import CoCurricularAcademic from '../pages/private/Academic-Management/CoCurricular';
+import Classes from '../pages/private/Academic-Management/Classes';
+import Sections from '../pages/private/Academic-Management/Sections';
+import Subjects from '../pages/private/Academic-Management/Subjects';
 
 // Module Dashboards
 import AcademicDashboard from '../pages/private/Academic-Management/Dashboard';
@@ -197,13 +193,9 @@ const AppRoutes = () => {
         <Route path="academics">
           <Route index element={<AcademicDashboard />} />
           <Route path="academic-years" element={<AcademicYear />} />
-          <Route path="class-section" element={<ClassSection />} />
-          <Route path="syllabus" element={<Syllabus />} />
-          <Route path="class-routine" element={<ClassRoutine />} />
-          <Route path="homework" element={<Homework />} />
-          <Route path="study-material" element={<StudyMaterial />} />
-          <Route path="online-class" element={<OnlineClass />} />
-          <Route path="co-curricular" element={<CoCurricularAcademic />} />
+          <Route path="classes" element={<Classes />} />
+          <Route path="sections" element={<Sections />} />
+          <Route path="subjects" element={<Subjects />} />
         </Route>
         <Route path="students">
           <Route index element={<StudentsDashboard />} />
