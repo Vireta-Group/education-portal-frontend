@@ -1,23 +1,19 @@
 import React from 'react';
 import ModuleDashboard from '../../../components/ModuleDashboard';
-import { Layers, CalendarRange } from 'lucide-react';
+import { Layers, CalendarRange, BookOpen, CircleDot } from 'lucide-react';
 
 const Dashboard = () => {
   const subModules = [
     { path: 'academic-years', title: 'Academic Years', description: 'Manage academic years, activation and archiving.', icon: CalendarRange },
-    { path: 'class-section', title: 'Class & Section', description: 'Manage classes and sections.', icon: Layers },
-    { path: 'syllabus', title: 'Syllabus', description: 'Manage syllabus for different classes.', icon: Layers },
-    { path: 'class-routine', title: 'Class Routine', description: 'Manage class schedules.', icon: Layers },
-    { path: 'homework', title: 'Homework', description: 'Assign and track homework.', icon: Layers },
-    { path: 'study-material', title: 'Study Material', description: 'Upload and manage study materials.', icon: Layers },
-    { path: 'online-class', title: 'Online Class', description: 'Manage virtual classrooms.', icon: Layers },
-    { path: 'co-curricular', title: 'Co-Curricular', description: 'Manage co-curricular activities.', icon: Layers }
+    { path: 'classes', title: 'Classes', description: 'Manage class levels with type and ordering.', icon: Layers },
+    { path: 'sections', title: 'Sections', description: 'Manage class sections with shift and capacity.', icon: CircleDot },
+    { path: 'subjects', title: 'Subjects', description: 'Manage subjects with type and credit hours.', icon: BookOpen }
   ];
 
   return (
-    <ModuleDashboard 
-      title="Academic Management" 
-      subModules={subModules} 
+    <ModuleDashboard
+      title="Academic Management"
+      subModules={subModules}
     />
   );
 };
