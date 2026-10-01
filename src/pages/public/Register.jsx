@@ -1,11 +1,12 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Mail, Lock, User, Phone, Building, Globe, ArrowLeft, BookOpen, AlertCircle, Check, ArrowRight } from 'lucide-react';
+import { Mail, Lock, User, Phone, Building, Globe, ArrowLeft, School, AlertCircle, Check, ChevronRight, ChevronLeft } from 'lucide-react';
 import { registerSchool, clearAuthError } from '../../store/slices/authSlice';
+import ThemeToggle from '../../components/ThemeToggle';
 
 const SCHOOL_TYPES = [
   { value: 'Primary', label: 'Primary' },
@@ -26,19 +27,19 @@ const registerSchema = z.object({
   admin_password: z.string().min(1, 'Password is required'),
 });
 
-const ONBOARDING_STEPS = [
-  { number: 1, label: 'School Info' },
-  { number: 2, label: 'Academic Calendar' },
-  { number: 3, label: 'Address & Principal' },
-  { number: 4, label: 'Branding & Notifications' },
+const STEPS = [
+  { title: 'School Info', fields: ['name_en', 'name_bn', 'school_type'] },
+  { title: 'Contact', fields: ['email', 'phone'] },
+  { title: 'Admin Account', fields: ['admin_name_en', 'admin_name_bn', 'admin_password'] },
 ];
 
 const Register = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { loading, error, token } = useSelector((state) => state.auth);
+  const [step, setStep] = useState(0);
 
-  const { register, handleSubmit, formState: { errors } } = useForm({
+  const { register, handleSubmit, trigger, formState: { errors } } = useForm({
     resolver: zodResolver(registerSchema),
   });
 
@@ -46,7 +47,7 @@ const Register = () => {
     if (token) {
       localStorage.setItem('token', token);
       localStorage.setItem('isAuthenticated', 'true');
-      navigate('/onboarding/step-1');
+      navigate('/school-onboarding');
     }
   }, [token, navigate]);
 
@@ -54,171 +55,206 @@ const Register = () => {
     return () => { dispatch(clearAuthError()); };
   }, [dispatch]);
 
+  const validateStep = async () => {
+    const fields = STEPS[step].fields;
+    const result = await trigger(fields);
+    return result;
+  };
+
+  const handleNext = async () => {
+    const valid = await validateStep();
+    if (valid) setStep((prev) => Math.min(prev + 1, STEPS.length - 1));
+  };
+
+  const handlePrev = () => setStep((prev) => Math.max(prev - 1, 0));
+
   const onSubmit = (data) => {
     dispatch(registerSchool(data));
   };
 
-  const inputClass = 'block w-full pl-10 bg-slate-900/50 border border-slate-700 rounded-xl py-2.5 text-slate-200 placeholder-slate-500 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all sm:text-sm';
-  const inputErrorClass = 'block w-full pl-10 bg-slate-900/50 border border-red-500 rounded-xl py-2.5 text-slate-200 placeholder-slate-500 focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all sm:text-sm';
-  const labelClass = 'block text-sm font-medium text-slate-300';
-  const iconClass = 'absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none transition-colors group-focus-within:text-indigo-400 text-slate-500';
+  const inputClass = "block w-full pl-11 pr-4 py-2.5 bg-white dark:bg-secondary-900 border border-gray-200 dark:border-gray-700 rounded-xl text-secondary-800 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all sm:text-sm";
+
+  const renderStepIndicator = () => (
+    <div className="flex items-center justify-center gap-2 mb-8">
+      {STEPS.map((s, i) => (
+        <div key={i} className="flex items-center gap-2">
+          <button type="button" disabled={loading} onClick={() => i < step && setStep(i)} className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all ${i === step ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/25 scale-110' : i < step ? 'bg-emerald-500 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500'}`}>
+            {i < step ? <Check className="w-4 h-4" /> : i + 1}
+          </button>
+          <span className={`text-xs font-medium hidden sm:block ${i === step ? 'text-indigo-600 dark:text-indigo-400' : i < step ? 'text-emerald-600 dark:text-emerald-400' : 'text-gray-400 dark:text-gray-500'}`}>{s.title}</span>
+          {i < STEPS.length - 1 && <div className={`w-8 h-0.5 ${i < step ? 'bg-emerald-400' : 'bg-gray-200 dark:bg-gray-700'}`} />}
+        </div>
+      ))}
+    </div>
+  );
 
   return (
-    <div className="min-h-screen bg-slate-900 flex flex-col justify-center relative overflow-hidden">
-      <div className="absolute inset-0 bg-[url('https://patterns.dev/img/topography.svg')] opacity-10"></div>
-      <div className="absolute top-10 right-10 w-96 h-96 bg-indigo-500 rounded-full mix-blend-multiply filter blur-[100px] opacity-40 animate-pulse"></div>
-      <div className="absolute bottom-10 left-10 w-[500px] h-[500px] bg-emerald-500 rounded-full mix-blend-multiply filter blur-[120px] opacity-30 animate-pulse animation-delay-2000"></div>
-
-      <div className="sm:mx-auto sm:w-full sm:max-w-lg relative z-10">
-        <div className="flex justify-center mb-4">
-          <div className="w-16 h-16 bg-gradient-to-tr from-emerald-600 to-indigo-500 rounded-2xl flex items-center justify-center shadow-[0_0_40px_rgba(16,185,129,0.4)]">
-            <BookOpen className="text-white w-8 h-8" />
+    <div className="min-h-screen bg-white dark:bg-secondary-900 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <ThemeToggle />
+      <div className="sm:mx-auto sm:w-full sm:max-w-lg">
+        <div className="flex justify-center mb-6">
+          <div className="w-16 h-16 bg-gradient-to-br from-indigo-600 to-indigo-700 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-500/25">
+            <School className="w-8 h-8 text-white" />
           </div>
         </div>
-        <h2 className="text-center text-3xl font-extrabold text-white tracking-tight">
-          Create Your School
+        <h2 className="mt-2 text-center text-3xl font-extrabold text-secondary-800 dark:text-white tracking-tight">
+          Register Your School
         </h2>
-        <p className="mt-1 text-center text-sm text-slate-400">
-          Create admin account &mdash; then complete 4 quick setup steps
+        <p className="mt-2 text-center text-sm text-gray-500 dark:text-gray-400">
+          Create your Sunshine School management account
         </p>
       </div>
 
-      {/* Onboarding steps preview */}
-      <div className="mt-6 sm:mx-auto sm:w-full sm:max-w-lg relative z-10 px-4 sm:px-0">
-        <div className="bg-slate-800/30 backdrop-blur-sm rounded-xl border border-slate-700/30 p-4">
-          <div className="flex items-center justify-between">
-            {ONBOARDING_STEPS.map((s, i) => (
-              <div key={s.number} className="flex items-center gap-0 flex-1">
-                <div className="flex flex-col items-center">
-                  <div className="w-8 h-8 rounded-full bg-slate-700 text-slate-500 flex items-center justify-center text-xs font-bold border border-slate-600">
-                    {s.number}
-                  </div>
-                  <span className="text-[10px] text-slate-500 mt-1 hidden sm:block whitespace-nowrap">{s.label}</span>
-                </div>
-                {i < ONBOARDING_STEPS.length - 1 && (
-                  <div className="flex-1 h-px bg-slate-700 mx-2 mt-[-1.25rem]" />
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
+      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-lg px-4 sm:px-0">
+        <div className="bg-white dark:bg-secondary-800 py-8 px-4 shadow-sm sm:rounded-2xl sm:px-10 border border-gray-100 dark:border-gray-700">
+          {renderStepIndicator()}
 
-      <div className="mt-6 sm:mx-auto sm:w-full sm:max-w-lg relative z-10 px-4 sm:px-0">
-        <div className="bg-slate-800/60 backdrop-blur-xl py-8 px-4 shadow-2xl sm:rounded-2xl sm:px-10 border border-slate-700/50">
           <form className="space-y-5" onSubmit={handleSubmit(onSubmit)}>
             {error && (
-              <div className="bg-red-500/10 border border-red-500/50 text-red-400 p-4 rounded-xl flex items-start gap-3 text-sm">
+              <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/50 text-red-600 dark:text-red-400 p-4 rounded-xl flex items-start gap-3 text-sm">
                 <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
                 <span>{error}</span>
               </div>
             )}
 
-            <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 pb-1 border-b border-slate-700/50">School Information</p>
-
-            <div>
-              <label className={labelClass}>School Name (English) *</label>
-              <div className="mt-1.5 relative group">
-                <div className={iconClass}><Building className="h-5 w-5" /></div>
-                <input {...register('name_en')} type="text" className={errors.name_en ? inputErrorClass : inputClass} placeholder="EduPro Academy" />
-              </div>
-              {errors.name_en && <p className="mt-1 text-xs text-red-400">{errors.name_en.message}</p>}
-            </div>
-
-            <div>
-              <label className={labelClass}>School Name (Bengali) *</label>
-              <div className="mt-1.5 relative group">
-                <div className={iconClass}><Building className="h-5 w-5" /></div>
-                <input {...register('name_bn')} type="text" className={errors.name_bn ? inputErrorClass : inputClass} placeholder="এডুপ্রো অ্যাকাডেমি" />
-              </div>
-              {errors.name_bn && <p className="mt-1 text-xs text-red-400">{errors.name_bn.message}</p>}
-            </div>
-
-            <div>
-              <label className={labelClass}>School Type *</label>
-              <div className="mt-1.5 relative group">
-                <div className={iconClass}><Globe className="h-5 w-5" /></div>
-                <select {...register('school_type')} className={`block w-full pl-10 bg-slate-900/50 border ${errors.school_type ? 'border-red-500' : 'border-slate-700'} rounded-xl py-2.5 text-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all sm:text-sm appearance-none`}>
-                  <option value="" className="text-slate-500">Select type</option>
-                  {SCHOOL_TYPES.map((t) => (
-                    <option key={t.value} value={t.value} className="text-slate-200">{t.label}</option>
-                  ))}
-                </select>
-              </div>
-              {errors.school_type && <p className="mt-1 text-xs text-red-400">{errors.school_type.message}</p>}
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className={labelClass}>Email</label>
-                <div className="mt-1.5 relative group">
-                  <div className={iconClass}><Mail className="h-5 w-5" /></div>
-                  <input {...register('email')} type="email" className={errors.email ? inputErrorClass : inputClass} placeholder="admin@school.com" />
+            {/* Step 1: School Info */}
+            {step === 0 && (
+              <>
+                <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500 pb-1 border-b border-gray-100 dark:border-gray-700">School Information</p>
+                <div>
+                  <label className="block text-sm font-medium text-secondary-800 dark:text-white">School Name (English) *</label>
+                  <div className="mt-1.5 relative">
+                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none"><Building className="h-5 w-5 text-gray-400 dark:text-gray-500" /></div>
+                    <input {...register('name_en')} type="text" className={inputClass} placeholder="Sunshine School" />
+                  </div>
+                  {errors.name_en && <p className="mt-1 text-xs text-red-500">{errors.name_en.message}</p>}
                 </div>
-                {errors.email && <p className="mt-1 text-xs text-red-400">{errors.email.message}</p>}
-              </div>
-              <div>
-                <label className={labelClass}>Phone *</label>
-                <div className="mt-1.5 relative group">
-                  <div className={iconClass}><Phone className="h-5 w-5" /></div>
-                  <input {...register('phone')} type="tel" className={errors.phone ? inputErrorClass : inputClass} placeholder="+8801XXXXXXXXX" />
+                <div>
+                  <label className="block text-sm font-medium text-secondary-800 dark:text-white">School Name (Bengali) *</label>
+                  <div className="mt-1.5 relative">
+                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none"><Building className="h-5 w-5 text-gray-400 dark:text-gray-500" /></div>
+                    <input {...register('name_bn')} type="text" className={inputClass} placeholder="সানশাইন স্কুল" />
+                  </div>
+                  {errors.name_bn && <p className="mt-1 text-xs text-red-500">{errors.name_bn.message}</p>}
                 </div>
-                {errors.phone && <p className="mt-1 text-xs text-red-400">{errors.phone.message}</p>}
-              </div>
-            </div>
-
-            <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 pb-1 pt-2 border-b border-slate-700/50">Admin Account</p>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className={labelClass}>Admin Name (English) *</label>
-                <div className="mt-1.5 relative group">
-                  <div className={iconClass}><User className="h-5 w-5" /></div>
-                  <input {...register('admin_name_en')} type="text" className={errors.admin_name_en ? inputErrorClass : inputClass} placeholder="John Doe" />
+                <div>
+                  <label className="block text-sm font-medium text-secondary-800 dark:text-white">School Type *</label>
+                  <div className="mt-1.5 relative">
+                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none"><Globe className="h-5 w-5 text-gray-400 dark:text-gray-500" /></div>
+                    <select {...register('school_type')} className="block w-full pl-11 pr-4 py-2.5 bg-white dark:bg-secondary-900 border border-gray-200 dark:border-gray-700 rounded-xl text-secondary-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all sm:text-sm appearance-none">
+                      <option value="" className="text-gray-400">Select type</option>
+                      {SCHOOL_TYPES.map((t) => (
+                        <option key={t.value} value={t.value} className="text-secondary-800 dark:text-white">{t.label}</option>
+                      ))}
+                    </select>
+                  </div>
+                  {errors.school_type && <p className="mt-1 text-xs text-red-500">{errors.school_type.message}</p>}
                 </div>
-                {errors.admin_name_en && <p className="mt-1 text-xs text-red-400">{errors.admin_name_en.message}</p>}
-              </div>
-              <div>
-                <label className={labelClass}>Admin Name (Bengali) *</label>
-                <div className="mt-1.5 relative group">
-                  <div className={iconClass}><User className="h-5 w-5" /></div>
-                  <input {...register('admin_name_bn')} type="text" className={errors.admin_name_bn ? inputErrorClass : inputClass} placeholder="জন ডো" />
+              </>
+            )}
+
+            {/* Step 2: Contact */}
+            {step === 1 && (
+              <>
+                <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500 pb-1 border-b border-gray-100 dark:border-gray-700">Contact Information</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-secondary-800 dark:text-white">Email</label>
+                    <div className="mt-1.5 relative">
+                      <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none"><Mail className="h-5 w-5 text-gray-400 dark:text-gray-500" /></div>
+                      <input {...register('email')} type="email" className={inputClass} placeholder="admin@school.com" />
+                    </div>
+                    {errors.email && <p className="mt-1 text-xs text-red-500">{errors.email.message}</p>}
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-secondary-800 dark:text-white">Phone *</label>
+                    <div className="mt-1.5 relative">
+                      <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none"><Phone className="h-5 w-5 text-gray-400 dark:text-gray-500" /></div>
+                      <input {...register('phone')} type="tel" className={inputClass} placeholder="+8801XXXXXXXXX" />
+                    </div>
+                    {errors.phone && <p className="mt-1 text-xs text-red-500">{errors.phone.message}</p>}
+                  </div>
                 </div>
-                {errors.admin_name_bn && <p className="mt-1 text-xs text-red-400">{errors.admin_name_bn.message}</p>}
-              </div>
-            </div>
+              </>
+            )}
 
-            <div>
-              <label className={labelClass}>Admin Password *</label>
-              <div className="mt-1.5 relative group">
-                <div className={iconClass}><Lock className="h-5 w-5" /></div>
-                <input {...register('admin_password')} type="password" className={errors.admin_password ? inputErrorClass : inputClass} placeholder="••••••••" />
-              </div>
-              {errors.admin_password && <p className="mt-1 text-xs text-red-400">{errors.admin_password.message}</p>}
-            </div>
+            {/* Step 3: Admin Account */}
+            {step === 2 && (
+              <>
+                <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500 pb-1 border-b border-gray-100 dark:border-gray-700">Admin Account</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-secondary-800 dark:text-white">Admin Name (English) *</label>
+                    <div className="mt-1.5 relative">
+                      <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none"><User className="h-5 w-5 text-gray-400 dark:text-gray-500" /></div>
+                      <input {...register('admin_name_en')} type="text" className={inputClass} placeholder="John Doe" />
+                    </div>
+                    {errors.admin_name_en && <p className="mt-1 text-xs text-red-500">{errors.admin_name_en.message}</p>}
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-secondary-800 dark:text-white">Admin Name (Bengali) *</label>
+                    <div className="mt-1.5 relative">
+                      <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none"><User className="h-5 w-5 text-gray-400 dark:text-gray-500" /></div>
+                      <input {...register('admin_name_bn')} type="text" className={inputClass} placeholder="জন ডো" />
+                    </div>
+                    {errors.admin_name_bn && <p className="mt-1 text-xs text-red-500">{errors.admin_name_bn.message}</p>}
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-secondary-800 dark:text-white">Admin Password *</label>
+                  <div className="mt-1.5 relative">
+                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none"><Lock className="h-5 w-5 text-gray-400 dark:text-gray-500" /></div>
+                    <input {...register('admin_password')} type="password" className={inputClass} placeholder="••••••••" />
+                  </div>
+                  {errors.admin_password && <p className="mt-1 text-xs text-red-500">{errors.admin_password.message}</p>}
+                </div>
+              </>
+            )}
 
-            <div className="pt-2">
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-[0_0_20px_rgba(16,185,129,0.2)] text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-800 focus:ring-emerald-500 transition-all active:scale-[0.98] disabled:opacity-70 disabled:active:scale-100"
-              >
-                {loading ? (
-                  <span className="flex items-center gap-2">
-                    <span className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-                    Creating Account...
-                  </span>
-                ) : (
-                  <span className="flex items-center gap-2"><Check className="w-5 h-5" /> Create Account <ArrowRight className="w-4 h-4" /></span>
-                )}
-              </button>
+            {/* Navigation Buttons */}
+            <div className={`pt-2 flex ${step === 0 ? 'justify-end' : 'justify-between'} gap-3`}>
+              {step > 0 && (
+                <button
+                  type="button"
+                  onClick={handlePrev}
+                  disabled={loading}
+                  className="flex items-center justify-center gap-2 py-3 px-5 border border-gray-200 dark:border-gray-700 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-secondary-900 hover:bg-gray-50 dark:hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all active:scale-[0.98] disabled:opacity-70"
+                >
+                  <ChevronLeft className="w-4 h-4" /> Previous
+                </button>
+              )}
+              {step < STEPS.length - 1 ? (
+                <button
+                  type="button"
+                  onClick={handleNext}
+                  disabled={loading}
+                  className="flex items-center justify-center gap-2 py-3 px-6 border border-transparent rounded-xl shadow-sm text-sm font-semibold text-white bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all active:scale-[0.98] disabled:opacity-70"
+                >
+                  Next <ChevronRight className="w-4 h-4" />
+                </button>
+              ) : (
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="flex items-center justify-center gap-2 py-3 px-6 border border-transparent rounded-xl shadow-sm text-sm font-semibold text-white bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all active:scale-[0.98] disabled:opacity-70"
+                >
+                  {loading ? (
+                    <span className="flex items-center gap-2">
+                      <span className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                      Registering...
+                    </span>
+                  ) : (
+                    <span className="flex items-center gap-2"><Check className="w-5 h-5" /> Register School</span>
+                  )}
+                </button>
+              )}
             </div>
           </form>
 
-          <div className="mt-8 pt-6 border-t border-slate-700/50">
+          <div className="mt-8 pt-6 border-t border-gray-100 dark:border-gray-700">
             <Link
               to="/login"
-              className="w-full flex justify-center items-center gap-2 py-3 px-4 border border-slate-600 rounded-xl text-sm font-medium text-slate-300 bg-slate-800 hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-800 focus:ring-indigo-500 transition-all"
+              className="w-full flex justify-center items-center gap-2 py-3 px-4 border border-gray-200 dark:border-gray-700 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-secondary-900 hover:bg-gray-50 dark:hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all"
             >
               <ArrowLeft className="w-4 h-4" /> Back to Login
             </Link>

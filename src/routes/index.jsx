@@ -20,16 +20,17 @@ import Admission from '../pages/public/Admission';
 import CoCurricular from '../pages/public/CoCurricular';
 import Newsroom from '../pages/public/Newsroom';
 import Contact from '../pages/public/Contact';
-import Landing from '../pages/public/Landing';
 
 // Features - Auth
 import Login from '../pages/public/Login';
 import Register from '../pages/public/Register';
+import SchoolOnboarding from '../pages/public/SchoolOnboarding';
 
 // Features - App Modules
 import Dashboard from '../pages/private/Dashboard';
 
 // Academic Management Modules
+import AcademicYear from '../pages/private/Academic-Management/AcademicYear';
 import ClassSection from '../pages/private/Academic-Management/ClassSection';
 import Syllabus from '../pages/private/Academic-Management/Syllabus';
 import ClassRoutine from '../pages/private/Academic-Management/ClassRoutine';
@@ -38,8 +39,27 @@ import StudyMaterial from '../pages/private/Academic-Management/StudyMaterial';
 import OnlineClass from '../pages/private/Academic-Management/OnlineClass';
 import CoCurricularAcademic from '../pages/private/Academic-Management/CoCurricular';
 
+// Module Dashboards
+import AcademicDashboard from '../pages/private/Academic-Management/Dashboard';
+import StudentsDashboard from '../pages/private/students/Dashboard';
+import TeachersDashboard from '../pages/private/teachers/Dashboard';
+import EmployeesDashboard from '../pages/private/employees/Dashboard';
+import ExamsDashboard from '../pages/private/exams/Dashboard';
+import ResultsDashboard from '../pages/private/results/Dashboard';
+import FeesDashboard from '../pages/private/fees/Dashboard';
+import TransportDashboard from '../pages/private/transport/Dashboard';
+import HostelDashboard from '../pages/private/hostel/Dashboard';
+import CanteenDashboard from '../pages/private/canteen/Dashboard';
+import LibraryDashboard from '../pages/private/library/Dashboard';
+import HrDashboard from '../pages/private/hr/Dashboard';
+import CommunicationDashboard from '../pages/private/communication/Dashboard';
+import EventsDashboard from '../pages/private/events/Dashboard';
+import SecurityDashboard from '../pages/private/security/Dashboard';
+import HealthDashboard from '../pages/private/health/Dashboard';
+
 // Dynamic Modules
 import StudentsAdmission from '../pages/private/students/Admission';
+import StudentsStudentList from '../pages/private/students/StudentList';
 import StudentsStudentProfile from '../pages/private/students/StudentProfile';
 import StudentsParentGuardian from '../pages/private/students/ParentGuardian';
 import StudentsStudentAttendance from '../pages/private/students/StudentAttendance';
@@ -156,9 +176,10 @@ const AppRoutes = () => {
   return (
     <Routes>
       {/* Public Routes */}
-      <Route path="/" element={<Landing />} />
+      <Route path="/" element={<Navigate to="/public" replace />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/school-onboarding" element={<SchoolOnboarding />} />
       
       {/* Public Portfolio Routing */}
       <Route path="/public" element={<PublicLayout />}>
@@ -191,7 +212,8 @@ const AppRoutes = () => {
       >
                 <Route path="dashboard" element={<Dashboard />} />
         <Route path="academics">
-          <Route index element={<Navigate to="class-section" replace />} />
+          <Route index element={<AcademicDashboard />} />
+          <Route path="academic-years" element={<AcademicYear />} />
           <Route path="class-section" element={<ClassSection />} />
           <Route path="syllabus" element={<Syllabus />} />
           <Route path="class-routine" element={<ClassRoutine />} />
@@ -201,9 +223,10 @@ const AppRoutes = () => {
           <Route path="co-curricular" element={<CoCurricularAcademic />} />
         </Route>
         <Route path="students">
-          <Route index element={<Navigate to="admission" replace />} />
+          <Route index element={<StudentsDashboard />} />
           <Route path="admission" element={<StudentsAdmission />} />
-          <Route path="student-profile" element={<StudentsStudentProfile />} />
+          <Route path="student-list" element={<StudentsStudentList />} />
+          <Route path="student-profile/:studentId?" element={<StudentsStudentProfile />} />
           <Route path="parent-guardian" element={<StudentsParentGuardian />} />
           <Route path="student-attendance" element={<StudentsStudentAttendance />} />
           <Route path="student-transfer" element={<StudentsStudentTransfer />} />
@@ -213,7 +236,7 @@ const AppRoutes = () => {
           <Route path="health-record" element={<StudentsHealthRecord />} />
         </Route>
         <Route path="teachers">
-          <Route index element={<Navigate to="teacher-profile" replace />} />
+          <Route index element={<TeachersDashboard />} />
           <Route path="teacher-profile" element={<TeachersTeacherProfile />} />
           <Route path="subject-section" element={<TeachersSubjectSection />} />
           <Route path="teacher-attendance" element={<TeachersTeacherAttendance />} />
@@ -223,7 +246,7 @@ const AppRoutes = () => {
           <Route path="transfer-resignation" element={<TeachersTransferResignation />} />
         </Route>
         <Route path="employees">
-          <Route index element={<Navigate to="employee-profile" replace />} />
+          <Route index element={<EmployeesDashboard />} />
           <Route path="employee-profile" element={<EmployeesEmployeeProfile />} />
           <Route path="department-management" element={<EmployeesDepartmentManagement />} />
           <Route path="employee-attendance" element={<EmployeesEmployeeAttendance />} />
@@ -235,7 +258,7 @@ const AppRoutes = () => {
           <Route path="training-management" element={<EmployeesTrainingManagement />} />
         </Route>
         <Route path="exams">
-          <Route index element={<Navigate to="exam-configuration" replace />} />
+          <Route index element={<ExamsDashboard />} />
           <Route path="exam-configuration" element={<ExamsExamConfiguration />} />
           <Route path="exam-schedule" element={<ExamsExamSchedule />} />
           <Route path="question-bank" element={<ExamsQuestionBank />} />
@@ -244,7 +267,7 @@ const AppRoutes = () => {
           <Route path="marks-entry" element={<ExamsMarksEntry />} />
         </Route>
         <Route path="results">
-          <Route index element={<Navigate to="result-calculation" replace />} />
+          <Route index element={<ResultsDashboard />} />
           <Route path="result-calculation" element={<ResultsResultCalculation />} />
           <Route path="tabulation-sheet" element={<ResultsTabulationSheet />} />
           <Route path="marksheet" element={<ResultsMarksheet />} />
@@ -254,7 +277,7 @@ const AppRoutes = () => {
           <Route path="result-analytics" element={<ResultsResultAnalytics />} />
         </Route>
         <Route path="fees">
-          <Route index element={<Navigate to="fee-structure" replace />} />
+          <Route index element={<FeesDashboard />} />
           <Route path="fee-structure" element={<FeesFeeStructure />} />
           <Route path="discount-scholarship" element={<FeesDiscountScholarship />} />
           <Route path="monthly-bill" element={<FeesMonthlyBill />} />
@@ -264,7 +287,7 @@ const AppRoutes = () => {
           <Route path="fee-block" element={<FeesFeeBlock />} />
         </Route>
         <Route path="transport">
-          <Route index element={<Navigate to="vehicle-management" replace />} />
+          <Route index element={<TransportDashboard />} />
           <Route path="vehicle-management" element={<TransportVehicleManagement />} />
           <Route path="driver-staff" element={<TransportDriverStaff />} />
           <Route path="route-management" element={<TransportRouteManagement />} />
@@ -275,7 +298,7 @@ const AppRoutes = () => {
           <Route path="transport-p-l" element={<TransportTransportPL />} />
         </Route>
         <Route path="hostel">
-          <Route index element={<Navigate to="room-management" replace />} />
+          <Route index element={<HostelDashboard />} />
           <Route path="room-management" element={<HostelRoomManagement />} />
           <Route path="hostel-admission" element={<HostelHostelAdmission />} />
           <Route path="hostel-attendance" element={<HostelHostelAttendance />} />
@@ -285,7 +308,7 @@ const AppRoutes = () => {
           <Route path="hostel-expense" element={<HostelHostelExpense />} />
         </Route>
         <Route path="canteen">
-          <Route index element={<Navigate to="menu-management" replace />} />
+          <Route index element={<CanteenDashboard />} />
           <Route path="menu-management" element={<CanteenMenuManagement />} />
           <Route path="digital-wallet" element={<CanteenDigitalWallet />} />
           <Route path="p-o-s-system" element={<CanteenPOSSystem />} />
@@ -295,7 +318,7 @@ const AppRoutes = () => {
           <Route path="canteen-p-l" element={<CanteenCanteenPL />} />
         </Route>
         <Route path="library">
-          <Route index element={<Navigate to="book-catalog" replace />} />
+          <Route index element={<LibraryDashboard />} />
           <Route path="book-catalog" element={<LibraryBookCatalog />} />
           <Route path="digital-resource" element={<LibraryDigitalResource />} />
           <Route path="member-management" element={<LibraryMemberManagement />} />
@@ -305,7 +328,7 @@ const AppRoutes = () => {
           <Route path="o-p-a-c" element={<LibraryOPAC />} />
         </Route>
         <Route path="hr">
-          <Route index element={<Navigate to="payroll" replace />} />
+          <Route index element={<HrDashboard />} />
           <Route path="payroll" element={<HrPayroll />} />
           <Route path="provident-fund" element={<HrProvidentFund />} />
           <Route path="loan-management" element={<HrLoanManagement />} />
@@ -315,7 +338,7 @@ const AppRoutes = () => {
           <Route path="appraisal" element={<HrAppraisal />} />
         </Route>
         <Route path="communication">
-          <Route index element={<Navigate to="notice-board" replace />} />
+          <Route index element={<CommunicationDashboard />} />
           <Route path="notice-board" element={<CommunicationNoticeBoard />} />
           <Route path="messaging-system" element={<CommunicationMessagingSystem />} />
           <Route path="bulk-s-m-s" element={<CommunicationBulkSMS />} />
@@ -326,7 +349,7 @@ const AppRoutes = () => {
           <Route path="school-newsletter" element={<CommunicationSchoolNewsletter />} />
         </Route>
         <Route path="events">
-          <Route index element={<Navigate to="event-planning" replace />} />
+          <Route index element={<EventsDashboard />} />
           <Route path="event-planning" element={<EventsEventPlanning />} />
           <Route path="event-registration" element={<EventsEventRegistration />} />
           <Route path="ticket-management" element={<EventsTicketManagement />} />
@@ -334,14 +357,14 @@ const AppRoutes = () => {
           <Route path="event-expense" element={<EventsEventExpense />} />
         </Route>
         <Route path="security">
-          <Route index element={<Navigate to="gate-management" replace />} />
+          <Route index element={<SecurityDashboard />} />
           <Route path="gate-management" element={<SecurityGateManagement />} />
           <Route path="visitor-management" element={<SecurityVisitorManagement />} />
           <Route path="c-c-t-v-integration" element={<SecurityCCTVIntegration />} />
           <Route path="emergency-management" element={<SecurityEmergencyManagement />} />
         </Route>
         <Route path="health">
-          <Route index element={<Navigate to="medical-room" replace />} />
+          <Route index element={<HealthDashboard />} />
           <Route path="medical-room" element={<HealthMedicalRoom />} />
           <Route path="student-health" element={<HealthStudentHealth />} />
           <Route path="medicine-inventory" element={<HealthMedicineInventory />} />
@@ -352,8 +375,8 @@ const AppRoutes = () => {
         <Route index element={<Dashboard />} />
       </Route>
       
-      {/* Catch-all redirect to Landing */}
-      <Route path="*" element={<Landing />} />
+      {/* Catch-all redirect to Public Home */}
+      <Route path="*" element={<Navigate to="/public" replace />} />
     </Routes>
   );
 };

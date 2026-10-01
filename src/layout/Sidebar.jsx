@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { NavLink, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
+import { logout } from '../store/slices/authSlice';
 import {
   Building2, GraduationCap, BookOpen, Calculator, FileText, Settings, Bus, UserCircle2, Library, Calendar, ShieldCheck, Stethoscope, Award, Coffee, Home, UserCheck, MessageSquare, Briefcase, LogOut, ChevronDown, ChevronRight, Users, ClipboardList, Clock, PenTool, Files, Video, Activity, User, CalendarClock, CircleDollarSign, ArrowRightLeft, CalendarRange, Building, Utensils, ShieldAlert, TrendingUp, UserPlus, CircleDot
 } from 'lucide-react';
@@ -30,6 +31,7 @@ const MODULES = [
     path: '/students',
     subItems: [
       { id: 'admission', name: 'Admission', icon: CircleDot, path: '/students/admission' },
+      { id: 'student-list', name: 'Student List', icon: Users, path: '/students/student-list' },
       { id: 'student-profile', name: 'Student Profile', icon: User, path: '/students/student-profile' },
       { id: 'parent-guardian', name: 'Parent Guardian', icon: User, path: '/students/parent-guardian' },
       { id: 'student-attendance', name: 'Student Attendance', icon: User, path: '/students/student-attendance' },
@@ -250,9 +252,9 @@ const MODULES = [
 
 
 const Sidebar = ({ isOpen }) => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
-  const dispatch = useDispatch();
   const [expandedMenus, setExpandedMenus] = useState({});
 
   const toggleMenu = (e, id, hasSubItems) => {
@@ -263,7 +265,7 @@ const Sidebar = ({ isOpen }) => {
   };
 
   const handleLogout = () => {
-    dispatch(logoutUser());
+    dispatch(logout());
     navigate('/login');
   };
 
@@ -298,9 +300,8 @@ const Sidebar = ({ isOpen }) => {
           return (
             <div key={module.id} className="flex flex-col">
               <NavLink
-                to={module.subItems ? '#' : module.path}
+                to={module.path}
                 title={!isOpen ? module.name : undefined}
-                onClick={(e) => toggleMenu(e, module.id, !!module.subItems)}
                 className={({ isActive }) => `
                   flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group relative
                   ${(module.subItems ? isParentActive : isActive) 
@@ -318,7 +319,12 @@ const Sidebar = ({ isOpen }) => {
                 </span>
                 
                 {isOpen && module.subItems && (
-                  isExpanded ? <ChevronDown size={16} className="shrink-0" /> : <ChevronRight size={16} className="shrink-0" />
+                  <span 
+                    onClick={(e) => toggleMenu(e, module.id, true)}
+                    className="p-1 -mr-1 hover:bg-slate-200/50 dark:hover:bg-slate-700/50 rounded transition-colors cursor-pointer"
+                  >
+                    {isExpanded ? <ChevronDown size={16} className="shrink-0" /> : <ChevronRight size={16} className="shrink-0" />}
+                  </span>
                 )}
                 
                 {/* Active Indicator Line */}
