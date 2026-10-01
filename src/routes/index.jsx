@@ -52,6 +52,7 @@ import HealthDashboard from '../pages/private/health/Dashboard';
 
 // Dynamic Modules
 import StudentsAdmission from '../pages/private/students/Admission';
+import StudentsStudentList from '../pages/private/students/StudentList';
 import StudentsStudentProfile from '../pages/private/students/StudentProfile';
 import StudentsParentGuardian from '../pages/private/students/ParentGuardian';
 import StudentsStudentAttendance from '../pages/private/students/StudentAttendance';
@@ -208,7 +209,8 @@ const AppRoutes = () => {
         <Route path="students">
           <Route index element={<StudentsDashboard />} />
           <Route path="admission" element={<StudentsAdmission />} />
-          <Route path="student-profile" element={<StudentsStudentProfile />} />
+          <Route path="student-list" element={<StudentsStudentList />} />
+          <Route path="student-profile/:studentId?" element={<StudentsStudentProfile />} />
           <Route path="parent-guardian" element={<StudentsParentGuardian />} />
           <Route path="student-attendance" element={<StudentsStudentAttendance />} />
           <Route path="student-transfer" element={<StudentsStudentTransfer />} />

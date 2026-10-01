@@ -1,20 +1,11 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { post } from '../../lib/api';
 
 export const registerSchool = createAsyncThunk(
   'auth/register',
   async (formData, { rejectWithValue }) => {
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}api/register`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-        body: JSON.stringify(formData),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        const msg = data.message || Object.values(data.errors || {}).flat().join(', ') || 'Registration failed';
-        return rejectWithValue(msg);
-      }
-      return data.data;
+      return await post('/register', formData);
     } catch (err) {
       return rejectWithValue(err.message || 'Network error');
     }
@@ -25,17 +16,7 @@ export const loginUser = createAsyncThunk(
   'auth/login',
   async (credentials, { rejectWithValue }) => {
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}api/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-        body: JSON.stringify(credentials),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        const msg = data.message || Object.values(data.errors || {}).flat().join(', ') || 'Login failed';
-        return rejectWithValue(msg);
-      }
-      return data.data;
+      return await post('/auth/login', credentials);
     } catch (err) {
       return rejectWithValue(err.message || 'Network error');
     }

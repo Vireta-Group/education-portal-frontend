@@ -1,63 +1,40 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { request } from '../../lib/api';
 
-const api = () => import.meta.env.VITE_API_URL;
-
-const request = async ({ url, method, body }, { getState, rejectWithValue }) => {
-  const token = getState().auth.token;
-  try {
-    const res = await fetch(`${api()}${url}`, {
-      method,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-        Accept: 'application/json',
-      },
-      body: body ? JSON.stringify(body) : undefined,
-    });
-    const result = await res.json();
-    if (!res.ok) {
-      const msg =
-        result.message ||
-        Object.values(result.errors || {}).flat().join(', ') ||
-        'Request failed';
-      return rejectWithValue(msg);
-    }
-    return result.data;
-  } catch (err) {
-    return rejectWithValue(err.message || 'Network error');
-  }
-};
+const toMessage = (action) => action.payload || action.error?.message || 'Request failed';
 
 export const fetchAcademicYears = createAsyncThunk(
   'academicYear/list',
-  async (_, thunkApi) => request({ url: '/academic/years', method: 'GET' }, thunkApi)
+  async (_, thunkApi) => request('/academic/years', { token: thunkApi.getState().auth.token })
 );
 
 export const createAcademicYear = createAsyncThunk(
   'academicYear/create',
   async (data, thunkApi) =>
-    request({ url: '/academic/years', method: 'POST', body: data }, thunkApi)
+    request('/academic/years', { method: 'POST', body: data, token: thunkApi.getState().auth.token })
 );
 
 export const fetchAcademicYear = createAsyncThunk(
   'academicYear/show',
-  async (id, thunkApi) => request({ url: `/academic/years/${id}`, method: 'GET' }, thunkApi)
+  async (id, thunkApi) => request(`/academic/years/${id}`, { token: thunkApi.getState().auth.token })
 );
 
 export const activateAcademicYear = createAsyncThunk(
   'academicYear/activate',
-  async (id, thunkApi) => request({ url: `/academic/years/${id}/activate`, method: 'POST' }, thunkApi)
+  async (id, thunkApi) =>
+    request(`/academic/years/${id}/activate`, { method: 'POST', token: thunkApi.getState().auth.token })
 );
 
 export const archiveAcademicYear = createAsyncThunk(
   'academicYear/archive',
-  async (id, thunkApi) => request({ url: `/academic/years/${id}/archive`, method: 'POST' }, thunkApi)
+  async (id, thunkApi) =>
+    request(`/academic/years/${id}/archive`, { method: 'POST', token: thunkApi.getState().auth.token })
 );
 
 export const copyAcademicYear = createAsyncThunk(
   'academicYear/copy',
   async ({ id, data }, thunkApi) =>
-    request({ url: `/academic/years/${id}/copy`, method: 'POST', body: data }, thunkApi)
+    request(`/academic/years/${id}/copy`, { method: 'POST', body: data, token: thunkApi.getState().auth.token })
 );
 
 const initialState = {
@@ -91,7 +68,7 @@ const academicYearSlice = createSlice({
       })
       .addCase(fetchAcademicYears.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload;
+        state.error = toMessage(action);
       })
       .addCase(createAcademicYear.pending, (state) => {
         state.loading = true;
@@ -104,7 +81,7 @@ const academicYearSlice = createSlice({
       })
       .addCase(createAcademicYear.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload;
+        state.error = toMessage(action);
       })
       .addCase(fetchAcademicYear.pending, (state) => {
         state.loading = true;
@@ -116,7 +93,7 @@ const academicYearSlice = createSlice({
       })
       .addCase(fetchAcademicYear.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload;
+        state.error = toMessage(action);
       })
       .addCase(activateAcademicYear.pending, (state) => {
         state.loading = true;
@@ -131,7 +108,7 @@ const academicYearSlice = createSlice({
       })
       .addCase(activateAcademicYear.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload;
+        state.error = toMessage(action);
       })
       .addCase(archiveAcademicYear.pending, (state) => {
         state.loading = true;
@@ -146,7 +123,7 @@ const academicYearSlice = createSlice({
       })
       .addCase(archiveAcademicYear.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload;
+        state.error = toMessage(action);
       })
       .addCase(copyAcademicYear.pending, (state) => {
         state.loading = true;
@@ -158,7 +135,7 @@ const academicYearSlice = createSlice({
       })
       .addCase(copyAcademicYear.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload;
+        state.error = toMessage(action);
       });
   },
 });

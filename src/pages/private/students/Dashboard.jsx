@@ -1,10 +1,11 @@
 import React from 'react';
 import ModuleDashboard from '../../../components/ModuleDashboard';
-import { Layers } from 'lucide-react';
+import { Layers, Users } from 'lucide-react';
 
 const Dashboard = () => {
   const subModules = [
     { path: 'admission', title: 'Admission', description: 'Manage student admissions.', icon: Layers },
+    { path: 'student-list', title: 'All Students', description: 'Browse every enrolled student.', icon: Users },
     { path: 'student-profile', title: 'Student Profile', description: 'View and edit student profiles.', icon: Layers },
     { path: 'parent-guardian', title: 'Parent & Guardian', description: 'Manage parent information.', icon: Layers },
     { path: 'student-attendance', title: 'Attendance', description: 'Track student attendance.', icon: Layers },

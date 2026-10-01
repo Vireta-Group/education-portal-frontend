@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { NavLink, Link, useNavigate, useLocation } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { logout } from '../store/slices/authSlice';
 import {
   Building2, GraduationCap, BookOpen, Calculator, FileText, Settings, Bus, UserCircle2, Library, Calendar, ShieldCheck, Stethoscope, Award, Coffee, Home, UserCheck, MessageSquare, Briefcase, LogOut, ChevronDown, ChevronRight, Users, ClipboardList, Clock, PenTool, Files, Video, Activity, User, CalendarClock, CircleDollarSign, ArrowRightLeft, CalendarRange, Building, Utensils, ShieldAlert, TrendingUp, UserPlus, CircleDot
 } from 'lucide-react';
@@ -28,6 +30,7 @@ const MODULES = [
     path: '/students',
     subItems: [
       { id: 'admission', name: 'Admission', icon: CircleDot, path: '/students/admission' },
+      { id: 'student-list', name: 'Student List', icon: Users, path: '/students/student-list' },
       { id: 'student-profile', name: 'Student Profile', icon: User, path: '/students/student-profile' },
       { id: 'parent-guardian', name: 'Parent Guardian', icon: User, path: '/students/parent-guardian' },
       { id: 'student-attendance', name: 'Student Attendance', icon: User, path: '/students/student-attendance' },
@@ -248,6 +251,7 @@ const MODULES = [
 
 
 const Sidebar = ({ isOpen }) => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
   const [expandedMenus, setExpandedMenus] = useState({});
@@ -260,7 +264,7 @@ const Sidebar = ({ isOpen }) => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('isAuthenticated');
+    dispatch(logout());
     navigate('/login');
   };
 

@@ -1,20 +1,11 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { get, post } from '../../lib/api';
 
 export const saveSetupStep = createAsyncThunk(
   'setup/saveStep',
   async ({ step, data }, { getState, rejectWithValue }) => {
-    const token = getState().auth.token;
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}api/setup/step/${step}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}`, Accept: 'application/json' },
-        body: JSON.stringify(data),
-      });
-      const result = await res.json();
-      if (!res.ok) {
-        const msg = result.message || Object.values(result.errors || {}).flat().join(', ') || 'Failed to save';
-        return rejectWithValue(msg);
-      }
+      await post(`/setup/step/${step}`, data, { token: getState().auth.token });
       return { step };
     } catch (err) {
       return rejectWithValue(err.message || 'Network error');
@@ -25,17 +16,11 @@ export const saveSetupStep = createAsyncThunk(
 export const fetchSetupStep = createAsyncThunk(
   'setup/fetchStep',
   async ({ step }, { getState, rejectWithValue }) => {
-    const token = getState().auth.token;
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}api/setup/step/${step}`, {
-        method: 'GET',
-        headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' },
-      });
-      const result = await res.json();
-      if (!res.ok) throw new Error(result.message || 'Failed to fetch');
-      return { step, data: result.data };
+      const data = await get(`/setup/step/${step}`, { token: getState().auth.token });
+      return { step, data };
     } catch (err) {
-      return rejectWithValue(err.message);
+      return rejectWithValue(err.message || 'Network error');
     }
   }
 );
@@ -43,17 +28,10 @@ export const fetchSetupStep = createAsyncThunk(
 export const fetchSetupStatus = createAsyncThunk(
   'setup/fetchStatus',
   async (_, { getState, rejectWithValue }) => {
-    const token = getState().auth.token;
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}api/setup/status`, {
-        method: 'GET',
-        headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' },
-      });
-      const result = await res.json();
-      if (!res.ok) throw new Error(result.message || 'Failed to fetch status');
-      return result.data;
+      return await get('/setup/status', { token: getState().auth.token });
     } catch (err) {
-      return rejectWithValue(err.message);
+      return rejectWithValue(err.message || 'Network error');
     }
   }
 );
@@ -61,17 +39,10 @@ export const fetchSetupStatus = createAsyncThunk(
 export const completeOnboarding = createAsyncThunk(
   'setup/complete',
   async (_, { getState, rejectWithValue }) => {
-    const token = getState().auth.token;
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}api/setup/finish`, {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' },
-      });
-      const result = await res.json();
-      if (!res.ok) throw new Error(result.message || 'Failed to complete onboarding');
-      return result.data;
+      return await post('/setup/finish', undefined, { token: getState().auth.token });
     } catch (err) {
-      return rejectWithValue(err.message);
+      return rejectWithValue(err.message || 'Network error');
     }
   }
 );
