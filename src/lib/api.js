@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 const BASE_URL = (import.meta.env.VITE_API_URL || '').replace(/\/+$/, '');
 const API_PREFIX = '/api';
 
@@ -72,7 +71,6 @@ export const request = async (path, options = {}) => {
 export const get = (path, options) => request(path, { ...options, method: 'GET' });
 
 export const post = (path, body, options) => request(path, { ...options, method: 'POST', body });
-=======
 // Shared API request helper for Redux async thunks.
 // Returns { data, message } on success, or rejects with a readable error message.
 export const apiRequest = async ({ url, method = 'GET', body }, { getState, rejectWithValue }) => {
@@ -112,4 +110,3 @@ export const apiRequest = async ({ url, method = 'GET', body }, { getState, reje
     return rejectWithValue(err.message || 'Network error');
   }
 };
->>>>>>> 0ad6ee17e16ea6ed0f0225b59ccbaf2ea43388f3
