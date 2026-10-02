@@ -1,6 +1,8 @@
 // Shared API request helper for Redux async thunks.
 // Returns { data, message } on success, or rejects with a readable error message.
-export const apiRequest = async ({ url, method = 'GET', body }, { getState, rejectWithValue }) => {
+import { logout } from '../store/slices/authSlice';
+
+export const apiRequest = async ({ url, method = 'GET', body }, { getState, rejectWithValue, dispatch }) => {
   const token = getState().auth.token;
   // Normalize URL: strip trailing slash from base, ensure api/ prefix (avoids // and missing api/ 404s)
   const base = `${import.meta.env.VITE_API_URL}`.replace(/\/+$/, '');
@@ -22,6 +24,16 @@ export const apiRequest = async ({ url, method = 'GET', body }, { getState, reje
       result = await res.json();
     } catch {
       result = {};
+    }
+
+    // Session expired: clear auth state and send user to login
+    // (authSlice login/register use their own fetch, so failed logins are not affected)
+    if (res.status === 401) {
+      dispatch(logout());
+      if (window.location.pathname !== '/login') {
+        window.location.href = '/login';
+      }
+      return rejectWithValue(result.message || 'Session expired. Please log in again.');
     }
 
     if (!res.ok) {

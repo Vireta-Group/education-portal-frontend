@@ -6,6 +6,10 @@ import academicYearReducer from './slices/Academic-Management/academicYearSlice'
 import academicClassReducer from './slices/Academic-Management/classSlice';
 import academicSectionReducer from './slices/Academic-Management/sectionSlice';
 import academicSubjectReducer from './slices/Academic-Management/subjectSlice';
+import teacherReducer from './slices/teacher-management/teacherSlice';
+import teacherAssignmentReducer from './slices/teacher-management/teacherAssignmentSlice';
+import teacherCredentialReducer from './slices/teacher-management/teacherCredentialSlice';
+import teacherAttendanceReducer from './slices/teacher-management/teacherAttendanceSlice';
 
 export const store = configureStore({
   reducer: {
@@ -16,6 +20,10 @@ export const store = configureStore({
     academicClass: academicClassReducer,
     academicSection: academicSectionReducer,
     academicSubject: academicSubjectReducer,
+    teacher: teacherReducer,
+    teacherAssignment: teacherAssignmentReducer,
+    teacherCredential: teacherCredentialReducer,
+    teacherAttendance: teacherAttendanceReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
